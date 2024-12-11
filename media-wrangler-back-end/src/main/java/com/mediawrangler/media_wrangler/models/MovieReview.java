@@ -4,7 +4,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-
 import java.time.LocalDate;
 import java.util.Objects;
 
@@ -16,29 +15,22 @@ public class MovieReview {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private LocalDate dateCreated;
-    private String comment;
-    private int rating;
+    private String review;
 
 
-    //TODO: Once User and Movie classes are setup add them
+
+    //TODO: Once User, Movie and Rating classes are setup add them
 
 
     //* Empty constructor for hibernate to use
     public MovieReview() {
     }
 
-    //* Constructor for just a star rating
-    // TODO: add user and movie
-    public MovieReview(int rating) {
-        this.rating = rating;
-    }
 
     //* Overloaded constructor
-    // TODO: add user and movie
-    public MovieReview(LocalDate dateCreated, String comment, int rating) {
-        this.dateCreated = dateCreated;
-        this.comment = comment;
-        this.rating = rating;
+    // TODO: add user, movie, rating
+    public MovieReview(LocalDate dateCreated, String review, int rating) {
+        this.review = review;
     }
 
 
@@ -55,21 +47,15 @@ public class MovieReview {
         this.dateCreated = dateCreated;
     }
 
-    public String getComment() {
-        return comment;
+    public String getReview() {
+        return review;
     }
 
-    public void setComment(String comment) {
-        this.comment = comment;
+    public void setComment(String review) {
+        this.review = review;
     }
 
-    public int getRating() {
-        return rating;
-    }
 
-    public void setRating(int rating) {
-        this.rating = rating;
-    }
 
 
     @Override
@@ -86,13 +72,13 @@ public class MovieReview {
     }
 
     //TODO: Update toString once decided how info should be presented
+
     @Override
     public String toString() {
-        return "Review{" +
+        return "MovieReview{" +
                 "id=" + id +
                 ", dateCreated=" + dateCreated +
-                ", comment='" + comment + '\'' +
-                ", rating=" + rating +
+                ", review='" + review + '\'' +
                 '}';
     }
 }

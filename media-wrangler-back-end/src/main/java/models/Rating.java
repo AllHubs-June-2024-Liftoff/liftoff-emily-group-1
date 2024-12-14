@@ -9,14 +9,15 @@ import java.util.Objects;
 public class Rating {
 
     private long id;
+    private LocalDateTime dateRated;
 
     //? This will be a display of stars, whatever star they click on will rep the int value
     @NotBlank
     private int value;
-    @NotNull
-    private LocalDateTime dateRated;
+
     @NotNull
     private Movie movie;
+
     @NotNull
     private User user;
 

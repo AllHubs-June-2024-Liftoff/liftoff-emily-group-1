@@ -1,7 +1,12 @@
 package com.mediawrangler.media_wrangler.models;
 
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 
@@ -10,11 +15,20 @@ public class MovieReview {
 
 
     private int id;
-    private LocalDate dateCreated;
+    private LocalDateTime dateCreated;
+
+    //? Might want to change the max to higher than 1000
+    @NotBlank
+    @Size(max = 1000, message = "Review must be less than 1000 characters")
     private String review;
 
+    @NotNull
     private Movie movie;
+
+    @NotNull
     private Rating rating;
+
+    @NotNull
     private User user;
 
 
@@ -22,12 +36,12 @@ public class MovieReview {
     }
 
 
-    public MovieReview(LocalDate dateCreated, String review, Movie movie, Rating rating, User user) {
-        this.dateCreated = dateCreated;
+    public MovieReview(String review, Movie movie, Rating rating, User user) {
         this.review = review;
         this.movie = movie;
         this.rating = rating;
         this.user = user;
+        this.dateCreated = LocalDateTime.now();
     }
 
     public int getId() {
@@ -35,11 +49,11 @@ public class MovieReview {
     }
 
 
-    public LocalDate getDateCreated() {
+    public LocalDateTime getDateCreated() {
         return dateCreated;
     }
 
-    public void setDateCreated(LocalDate dateCreated) {
+    public void setDateCreated(LocalDateTime dateCreated) {
         this.dateCreated = dateCreated;
     }
 

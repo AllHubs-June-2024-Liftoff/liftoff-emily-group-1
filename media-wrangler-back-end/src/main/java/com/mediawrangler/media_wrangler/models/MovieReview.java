@@ -1,43 +1,39 @@
 package com.mediawrangler.media_wrangler.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+
 import java.time.LocalDate;
 import java.util.Objects;
 
 
-@Entity
+
 public class MovieReview {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+
     private int id;
     private LocalDate dateCreated;
     private String review;
 
+    private Movie movie;
+    private Rating rating;
+    private User user;
 
 
-    //TODO: Once User, Movie and Rating classes are setup add them
-
-
-    //* Empty constructor for hibernate to use
     public MovieReview() {
     }
 
 
-    //* Overloaded constructor
-    // TODO: add user, movie, rating
-    public MovieReview(LocalDate dateCreated, String review, int rating) {
+    public MovieReview(LocalDate dateCreated, String review, Movie movie, Rating rating, User user) {
+        this.dateCreated = dateCreated;
         this.review = review;
+        this.movie = movie;
+        this.rating = rating;
+        this.user = user;
     }
-
-
 
     public int getId() {
         return id;
     }
+
 
     public LocalDate getDateCreated() {
         return dateCreated;
@@ -51,12 +47,33 @@ public class MovieReview {
         return review;
     }
 
-    public void setComment(String review) {
+    public void setReview(String review) {
         this.review = review;
     }
 
+    public Movie getMovie() {
+        return movie;
+    }
 
+    public void setMovie(Movie movie) {
+        this.movie = movie;
+    }
 
+    public Rating getRating() {
+        return rating;
+    }
+
+    public void setRating(Rating rating) {
+        this.rating = rating;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -71,14 +88,18 @@ public class MovieReview {
         return Objects.hashCode(id);
     }
 
-    //TODO: Update toString once decided how info should be presented
 
+
+    //TODO: Update toString once decided how info should be presented
     @Override
     public String toString() {
         return "MovieReview{" +
                 "id=" + id +
                 ", dateCreated=" + dateCreated +
                 ", review='" + review + '\'' +
+                ", movie=" + movie +
+                ", rating=" + rating +
+                ", user=" + user +
                 '}';
     }
 }

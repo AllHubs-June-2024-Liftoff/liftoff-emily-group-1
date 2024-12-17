@@ -95,4 +95,5 @@ public class MovieList {
                 ", tags=" + tags +
                 '}';
     }
+
 }

@@ -65,9 +65,6 @@ public class UserController {
             return new ResponseEntity<>("Login successful!", HttpStatus.OK);
         }
 
-
-
-
         return new ResponseEntity<>("Invalid username or password", HttpStatus.UNAUTHORIZED);
     }
 

@@ -3,6 +3,7 @@ package com.mediawrangler.media_wrangler.controllers;
 import com.mediawrangler.media_wrangler.dto.LoginRequest;
 import com.mediawrangler.media_wrangler.models.User;
 import com.mediawrangler.media_wrangler.services.UserService;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -57,12 +58,23 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> loginUser(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<?> loginUser(@RequestBody LoginRequest loginRequest, HttpSession session) {
         User user = userRepository.findByUsername(loginRequest.getUsername());
         if (user != null && passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
+            session.setAttribute("user", user.getId());
             return new ResponseEntity<>("Login successful!", HttpStatus.OK);
         }
+
         return new ResponseEntity<>("Invalid username or password", HttpStatus.UNAUTHORIZED);
+    }
+
+    @GetMapping("/info")
+    public ResponseEntity<?> loginUser( HttpSession session) {
+        System.out.println(session.getAttribute("user"));
+        int userId = (int) session.getAttribute("user");
+        User user = userRepository.getById(userId);
+
+        return new ResponseEntity<>("User: " + user.getEmail(), HttpStatus.OK);
     }
 
 }

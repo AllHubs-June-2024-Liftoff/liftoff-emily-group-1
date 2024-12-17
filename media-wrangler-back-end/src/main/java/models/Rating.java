@@ -90,4 +90,5 @@ public class Rating {
                 ", user=" + user +
                 '}';
     }
+
 }

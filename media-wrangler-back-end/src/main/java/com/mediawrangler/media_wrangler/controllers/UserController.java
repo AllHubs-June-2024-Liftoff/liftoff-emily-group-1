@@ -59,13 +59,13 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody LoginRequest loginRequest, HttpSession session) {
-        User user = userRepository.findByUsername(loginRequest.getUsername());
+        User user = userRepository.findByUsernameOrEmail(loginRequest.getUsernameOrEmail(), loginRequest.getUsernameOrEmail());
         if (user != null && passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
             session.setAttribute("user", user.getId());
             return new ResponseEntity<>("Login successful!", HttpStatus.OK);
         }
 
-        return new ResponseEntity<>("Invalid username or password", HttpStatus.UNAUTHORIZED);
+        return new ResponseEntity<>("Invalid username/email or password", HttpStatus.UNAUTHORIZED);
     }
 
     @GetMapping("/info")
@@ -75,6 +75,12 @@ public class UserController {
         User user = userRepository.getById(userId);
 
         return new ResponseEntity<>("User: " + user.getEmail(), HttpStatus.OK);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<String> logoutUser(HttpSession session) {
+        session.invalidate();
+        return ResponseEntity.ok("Logout successful");
     }
 
 }

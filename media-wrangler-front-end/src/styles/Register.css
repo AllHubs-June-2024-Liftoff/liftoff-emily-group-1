@@ -1,0 +1,63 @@
+.register-container {
+    background: url('/Media Wrangler Background.jpg') no-repeat center center fixed;
+    background-size: cover;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.form-wrapper {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 2rem;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    max-width: 600px;
+    width: 100%;
+    color: #333;
+    text-align: center;
+}
+
+.title {
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+    color: #4a4a4a;
+}
+
+.field-group {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.field {
+    flex: 1;
+}
+
+.input {
+    width: 100%;
+    max-width: 100%;
+}
+
+.field.is-grouped {
+    justify-content: center;
+    margin-top: 1rem;
+}
+
+.button {
+    font-size: 1rem;
+    font-weight: bold;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    background-color: #DD8D4C;
+    color: white;
+    border: none;
+    transition: background-color 0.3s ease;
+}
+
+.button:hover {
+    background-color: #9E5231;
+}

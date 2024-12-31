@@ -1,6 +1,7 @@
 package com.mediawrangler.media_wrangler.dto;
 
 public class LoginRequest {
+
     private String usernameOrEmail;
     private String password;
 

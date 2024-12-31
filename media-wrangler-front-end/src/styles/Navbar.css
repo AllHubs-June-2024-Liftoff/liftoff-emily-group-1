@@ -1,0 +1,42 @@
+.navbar {
+    display: flex;
+    align-items: center;
+    background: linear-gradient(90deg, #848568, #DD8D4C, #9E5231); 
+    padding: 0.5rem 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+}
+
+.navbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 1rem; 
+}
+
+.logo {
+    max-height: 50px;
+}
+
+.navbar-buttons {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.navbar .button {
+    font-size: 0.9rem;
+    font-weight: bold;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    color: #ffffff;
+    background-color: #9E5231;
+    border: none;
+    transition: background-color 0.3s ease;
+}
+
+.navbar .button:hover {
+    background-color: #DD8D4C;
+}

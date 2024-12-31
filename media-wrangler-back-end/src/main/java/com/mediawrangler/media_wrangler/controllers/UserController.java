@@ -17,6 +17,7 @@ import com.mediawrangler.media_wrangler.data.UserRepository;
 import java.util.HashMap;
 import java.util.Map;
 
+@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
@@ -59,29 +60,48 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody LoginRequest loginRequest, HttpSession session) {
-        User user = userRepository.findByUsernameOrEmail(loginRequest.getUsernameOrEmail(), loginRequest.getUsernameOrEmail());
-        if (user != null && passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
-            session.setAttribute("user", user.getId());
-            return new ResponseEntity<>("Login successful!", HttpStatus.OK);
-        }
+        try {
+            User user = userRepository.findByUsernameOrEmail(loginRequest.getUsernameOrEmail(), loginRequest.getUsernameOrEmail());
+            if (user == null) {
+                return new ResponseEntity<>("Invalid username/email or password", HttpStatus.UNAUTHORIZED);
+            }
 
-        return new ResponseEntity<>("Invalid username/email or password", HttpStatus.UNAUTHORIZED);
+            if (passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
+                session.setAttribute("user", user.getId()); // Session attribute set here
+                System.out.println("Session ID: " + session.getId()); // Debugging session ID
+                System.out.println("User ID set in session: " + user.getId());
+                return new ResponseEntity<>("Login successful!", HttpStatus.OK);
+            }
+
+            return new ResponseEntity<>("Invalid username/email or password", HttpStatus.UNAUTHORIZED);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>("An unexpected error occurred during login", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @GetMapping("/info")
-    public ResponseEntity<?> loginUser( HttpSession session) {
-        System.out.println(session.getAttribute("user"));
-        int userId = (int) session.getAttribute("user");
-        User user = userRepository.getById(userId);
+    public ResponseEntity<?> loginUser(HttpSession session) {
+        try {
+            Object userIdObj = session.getAttribute("user"); // Get user attribute from session
+            if (userIdObj == null) {
+                return new ResponseEntity<>("No user logged in", HttpStatus.UNAUTHORIZED); // Handle null session attribute
+            }
 
-        return new ResponseEntity<>("User: " + user.getEmail(), HttpStatus.OK);
+            int userId = (int) userIdObj; // Safely cast the session attribute
+            User user = userRepository.findById(userId).orElse(null);
+            if (user == null) {
+                return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND); // Handle user not found
+            }
+
+            return new ResponseEntity<>("User: " + user.getEmail(), HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>("An unexpected error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
-    @PostMapping("/logout")
-    public ResponseEntity<String> logoutUser(HttpSession session) {
-        session.invalidate();
-        return ResponseEntity.ok("Logout successful");
-    }
 
 }
 

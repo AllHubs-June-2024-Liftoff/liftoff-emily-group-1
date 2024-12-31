@@ -5,6 +5,8 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
+import java.time.LocalDateTime;
+
 @Entity
 public class User {
 
@@ -34,6 +36,15 @@ public class User {
     @Email(message = "Invalid email format")
     @Column(unique = true)
     private String email;
+
+    @Column(name = "email_verified", nullable = false)
+    private boolean emailVerified = false;
+
+    @Column(name = "verification_token",nullable = true)
+    private String verificationToken;
+
+    @Column(name = "token_expiration_date", nullable = true)
+    private LocalDateTime tokenExpirationDate;
 
     public int getId() {
         return id;
@@ -81,5 +92,29 @@ public class User {
 
     public void setLastname(String lastname) {
         this.lastname = lastname;
+    }
+
+    public String getVerificationToken() {
+        return verificationToken;
+    }
+
+    public void setVerificationToken(String verificationToken) {
+        this.verificationToken = verificationToken;
+    }
+
+    public LocalDateTime getTokenExpirationDate() {
+        return tokenExpirationDate;
+    }
+
+    public void setTokenExpirationDate(LocalDateTime tokenExpirationDate) {
+        this.tokenExpirationDate = tokenExpirationDate;
+    }
+
+    public boolean isEmailVerified() {
+        return emailVerified;
+    }
+
+    public void setEmailVerified(boolean emailVerified) {
+        this.emailVerified = emailVerified;
     }
 }

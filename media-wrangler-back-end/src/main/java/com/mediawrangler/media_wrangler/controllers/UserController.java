@@ -45,10 +45,10 @@ public class UserController {
         }
 
         try {
-            userService.saveUser(user);
-            return new ResponseEntity<>("User registered successfully", HttpStatus.CREATED);
+            User savedUser = userService.saveUser(user);
+            userService.sendVerificationEmail(savedUser);
+            return new ResponseEntity<>("User registered successfully. Please verify your email.", HttpStatus.CREATED);
         } catch (DataIntegrityViolationException e) {
-
             if (e.getMessage().contains("users.UK_username")) {
                 return new ResponseEntity<>(Map.of("username", "Username is already taken"), HttpStatus.BAD_REQUEST);
             } else if (e.getMessage().contains("users.UK_email")) {
@@ -57,6 +57,23 @@ public class UserController {
             return new ResponseEntity<>(Map.of("error", "An unexpected error occurred"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @GetMapping("/verify")
+    public ResponseEntity<?> verifyEmail(@RequestParam("token") String token) {
+        System.out.println("Received token: " + token);
+        try {
+            boolean isVerified = userService.verifyEmailToken(token);
+            if (isVerified) {
+                return new ResponseEntity<>("Email verified successfully!", HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>("Invalid or expired token", HttpStatus.BAD_REQUEST);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>("An unexpected error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody LoginRequest loginRequest, HttpSession session) {
@@ -67,9 +84,8 @@ public class UserController {
             }
 
             if (passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
-                session.setAttribute("user", user.getId()); // Session attribute set here
-                System.out.println("Session ID: " + session.getId()); // Debugging session ID
-                System.out.println("User ID set in session: " + user.getId());
+                session.setAttribute("user", user.getId());
+
                 return new ResponseEntity<>("Login successful!", HttpStatus.OK);
             }
 
@@ -84,15 +100,15 @@ public class UserController {
     @GetMapping("/info")
     public ResponseEntity<?> loginUser(HttpSession session) {
         try {
-            Object userIdObj = session.getAttribute("user"); // Get user attribute from session
+            Object userIdObj = session.getAttribute("user");
             if (userIdObj == null) {
-                return new ResponseEntity<>("No user logged in", HttpStatus.UNAUTHORIZED); // Handle null session attribute
+                return new ResponseEntity<>("No user logged in", HttpStatus.UNAUTHORIZED);
             }
 
-            int userId = (int) userIdObj; // Safely cast the session attribute
+            int userId = (int) userIdObj;
             User user = userRepository.findById(userId).orElse(null);
             if (user == null) {
-                return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND); // Handle user not found
+                return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
             }
 
             return new ResponseEntity<>("User: " + user.getEmail(), HttpStatus.OK);
@@ -100,6 +116,18 @@ public class UserController {
             e.printStackTrace();
             return new ResponseEntity<>("An unexpected error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @GetMapping("/check-verification")
+    public ResponseEntity<?> checkEmailVerification(@RequestParam String usernameOrEmail) {
+        User user = userRepository.findByUsernameOrEmail(usernameOrEmail, usernameOrEmail);
+        if (user == null) {
+            return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+        }
+
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("verified", user.isEmailVerified());
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
 

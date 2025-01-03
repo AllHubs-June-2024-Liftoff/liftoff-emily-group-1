@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import MovieDetailCard from './MovieDetailCard/MovieDetailCard';
 
 function MovieSearch() {
     const [movieTitle, setMovieTitle] = useState('');

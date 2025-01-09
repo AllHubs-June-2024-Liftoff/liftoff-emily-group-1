@@ -6,6 +6,7 @@ import Typography from '@mui/material/Typography';
 import CardActionArea from '@mui/material/CardActionArea';
 import CardActions from '@mui/material/CardActions';
 import Button from '@mui/material/Button';
+import Container from '@mui/material/Container';
 import './MovieDetailCard.css';
 import PropTypes from 'prop-types';
 import MovieInteractions from '../MovieInteractions/InteractionsCard';
@@ -66,7 +67,12 @@ function MovieDetailCard({ title, releaseDate, overview, poster, id }) {
                         <b>Overview: </b>{ overview }
                     </Typography>          
                 </CardContent>
-                </div> 
+                </div>
+            
+                <Container fixed>
+                    
+                </Container>
+
                 <CardActions>
                     <Button onClick={handleWantToWatch}
                         size="small">Want to Watch</Button>

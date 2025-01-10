@@ -1,7 +1,10 @@
 package com.mediawrangler.media_wrangler;
 
+import com.mediawrangler.media_wrangler.models.Movie;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+import static com.mediawrangler.media_wrangler.services.MovieDataFetcher.fetchWatchProviders;
 
 @SpringBootApplication
 public class MediaWranglerApplication {
@@ -10,6 +13,6 @@ public class MediaWranglerApplication {
 		SpringApplication.run(MediaWranglerApplication.class, args);
 	}
 
-
-// testing
+		int movieId = 121;
+		Movie movie = fetchWatchProviders(movieId);
 }

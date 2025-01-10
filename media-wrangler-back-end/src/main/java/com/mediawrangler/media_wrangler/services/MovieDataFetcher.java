@@ -13,8 +13,9 @@ public class MovieDataFetcher {
 
     private static final String API_READ_ACCESS_KEY = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJmNGY4N2NjNmIxZTZhMzQyMThjNjdjYWM1NGMwYzE0ZiIsIm5iZiI6MTczNDE5MTM5MS43NzcsInN1YiI6IjY3NWRhOTFmZjFiZjk2ZGMyNDc4MTA4ZiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.4trA-9bv10lqcfQyhPxFTeKRWMyyPjIhgM_3Vri9Y6Y";
 
+    private static final OkHttpClient client = new OkHttpClient();
+
     public static Movie fetchMovieData(String movieTitle) {
-        OkHttpClient client = new OkHttpClient();
 
         int movieId = searchMovieIdByTitle(client, movieTitle);
         if (movieId == -1) {
@@ -25,7 +26,6 @@ public class MovieDataFetcher {
     }
 
     public static Movie fetchMovieData(int movieId) {
-        OkHttpClient client = new OkHttpClient();
 
         return fetchMovieDetails(client, movieId);
     }
@@ -93,7 +93,32 @@ public class MovieDataFetcher {
             return null;
         }
     }
-}
+
+    public static Movie fetchWatchProviders(int movieId) {
+        String url = "https://api.themoviedb.org/3/movie/" + movieId + "/watch/providers"
+
+        Request request = new Request.Builder()
+                .url(url)
+                .get()
+                .addHeader("accept", "application/json")
+                .build();
+
+        try (Response response = client.newCall(request).execute();) {
+            if (!response.isSuccessful()) {
+                System.out.println("Request failed with status: " + response.code());
+                return null;
+            }
+
+            return response.body().string();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+
+
 
 
 

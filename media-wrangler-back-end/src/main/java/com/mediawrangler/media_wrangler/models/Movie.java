@@ -1,5 +1,8 @@
 package com.mediawrangler.media_wrangler.models;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Movie {
     private int id;
     private String title;
@@ -8,9 +11,14 @@ public class Movie {
     private String overview;
     private String posterPath;
 
+    private List<String> buyProviders;
+    private List<String> flatrateProviders;
+    private List<String> rentProviders;
 
     public Movie() {
-
+        this.buyProviders = new ArrayList<>();
+        this.flatrateProviders = new ArrayList<>();
+        this.rentProviders = new ArrayList<>();
     }
 
     public Movie(int id, String title, String releaseDate, double rating, String overview, String posterPath) {
@@ -20,6 +28,9 @@ public class Movie {
         this.rating = rating;
         this.overview = overview;
         this.posterPath = posterPath;
+        this.buyProviders = new ArrayList<>();
+        this.flatrateProviders = new ArrayList<>();
+        this.rentProviders = new ArrayList<>();
     }
 
     public int getId() {
@@ -70,9 +81,52 @@ public class Movie {
         this.posterPath = posterPath;
     }
 
+    public List<String> getBuyProviders() {
+        return buyProviders;
+    }
+
+    public void setBuyProviders(List<String> buyProviders) {
+        this.buyProviders = buyProviders;
+    }
+
+    public List<String> getFlatrateProviders() {
+        return flatrateProviders;
+    }
+
+    public void setFlatrateProviders(List<String> flatrateProviders) {
+        this.flatrateProviders = flatrateProviders;
+    }
+
+    public List<String> getRentProviders() {
+        return rentProviders;
+    }
+
+    public void setRentProviders(List<String> rentProviders) {
+        this.rentProviders = rentProviders;
+    }
+
+    public void addBuyProvider(String provider) {
+        buyProviders.add(provider);
+    }
+
+    public void addFlatrateProvider(String provider) {
+        flatrateProviders.add(provider);
+    }
+
+    public void addRentProvider(String provider) {
+        rentProviders.add(provider);
+    }
+
     @Override
     public String toString() {
-        return "Title: " + title + "\nRelease Date: " + releaseDate + "\nRating: " + rating + "\nOverview: " + overview;
+        return "Title='" + title + '\'' +
+                ", releaseDate='" + releaseDate + '\'' +
+                ", rating=" + rating +
+                ", overview='" + overview + '\'' +
+                ", buyProviders=" + buyProviders +
+                ", flatrateProviders=" + flatrateProviders +
+                ", rentProviders=" + rentProviders +
+                '}';
     }
 }
 

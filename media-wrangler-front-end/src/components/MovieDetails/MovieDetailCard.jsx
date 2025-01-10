@@ -70,7 +70,7 @@ function MovieDetailCard({ title, releaseDate, overview, poster, id }) {
                 </div>
             
                 <Container fixed>
-                    
+                    <h3>Powered by JustWatch</h3>
                 </Container>
 
                 <CardActions>

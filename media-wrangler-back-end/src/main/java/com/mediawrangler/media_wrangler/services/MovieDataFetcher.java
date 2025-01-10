@@ -11,11 +11,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class MovieDataFetcher {
 
-    private static final String API_READ_ACCESS_KEY = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJmNGY4N2NjNmIxZTZhMzQyMThjNjdjYWM1NGMwYzE0ZiIsIm5iZiI6MTczNDE5MTM5MS43NzcsInN1YiI6IjY3NWRhOTFmZjFiZjk2ZGMyNDc4MTA4ZiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.4trA-9bv10lqcfQyhPxFTeKRWMyyPjIhgM_3Vri9Y6Y";
+    private final String API_READ_ACCESS_KEY = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJmNGY4N2NjNmIxZTZhMzQyMThjNjdjYWM1NGMwYzE0ZiIsIm5iZiI6MTczNDE5MTM5MS43NzcsInN1YiI6IjY3NWRhOTFmZjFiZjk2ZGMyNDc4MTA4ZiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.4trA-9bv10lqcfQyhPxFTeKRWMyyPjIhgM_3Vri9Y6Y";
 
-    private static final OkHttpClient client = new OkHttpClient();
+    private final OkHttpClient client = new OkHttpClient();
 
-    public static Movie fetchMovieData(String movieTitle) {
+    public Movie fetchMovieData(String movieTitle) {
 
         int movieId = searchMovieIdByTitle(client, movieTitle);
         if (movieId == -1) {
@@ -25,12 +25,12 @@ public class MovieDataFetcher {
         return fetchMovieDetails(client, movieId);
     }
 
-    public static Movie fetchMovieData(int movieId) {
+    public Movie fetchMovieData(int movieId) {
 
         return fetchMovieDetails(client, movieId);
     }
 
-    private static int searchMovieIdByTitle(OkHttpClient client, String title) {
+    private int searchMovieIdByTitle(OkHttpClient client, String title) {
         String apiUrl = "https://api.themoviedb.org/3/search/movie?" + "query=" + title + "&language=en-US";
 
         Request request = new Request.Builder()
@@ -61,19 +61,19 @@ public class MovieDataFetcher {
         }
     }
 
-    private static Movie fetchMovieDetails(OkHttpClient client, int movieId) {
+    private Movie fetchMovieDetails(OkHttpClient client, int movieId) {
         String apiUrl = "https://api.themoviedb.org/3/movie/" + movieId + "?" + "&language=en-US";
 
         Request request = new Request.Builder()
                 .url(apiUrl)
                 .get()
                 .addHeader("accept", "application/json")
-                .addHeader("Authorization","Bearer " + API_READ_ACCESS_KEY)
+                .addHeader("Authorization", "Bearer " + API_READ_ACCESS_KEY)
                 .build();
 
         try (Response response = client.newCall(request).execute()) {
             if (!response.isSuccessful()) {
-                System.out.println("Request failed with status: " + response.code());
+                System.out.println("Fetch Request failed with status: " + response.code());
                 return null;
             }
 
@@ -94,18 +94,19 @@ public class MovieDataFetcher {
         }
     }
 
-    public static Movie fetchWatchProviders(int movieId) {
-        String url = "https://api.themoviedb.org/3/movie/" + movieId + "/watch/providers"
-
+    public String fetchWatchProviders(int movieId) {
+        String url = "https://api.themoviedb.org/3/movie/" + movieId + "/watch/providers";
+        System.out.println("URL: " + url);
         Request request = new Request.Builder()
                 .url(url)
                 .get()
                 .addHeader("accept", "application/json")
+                .addHeader("Authorization", "Bearer " + API_READ_ACCESS_KEY)
                 .build();
 
         try (Response response = client.newCall(request).execute();) {
             if (!response.isSuccessful()) {
-                System.out.println("Request failed with status: " + response.code());
+                System.out.println("Provider Request failed with status: " + response.code());
                 return null;
             }
 
@@ -116,6 +117,7 @@ public class MovieDataFetcher {
             return null;
         }
     }
+}
 
 
 

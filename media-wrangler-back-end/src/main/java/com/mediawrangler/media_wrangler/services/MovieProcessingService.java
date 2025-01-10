@@ -1,37 +1,45 @@
 package com.mediawrangler.media_wrangler.services;
 
+import com.mediawrangler.media_wrangler.dto.MovieStreamingProviderDTO;
+import com.mediawrangler.media_wrangler.dto.ProviderDTO;
 import com.mediawrangler.media_wrangler.models.Movie;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.stereotype.Service;
 
+@Service
 public class MovieProcessingService {
 
-    public static Movie processMovieData(int movieId, String rawJson) {
+    private String providerBaseURL = "https://image.tmdb.org/t/p/";
+
+    public MovieStreamingProviderDTO processMovieData(String rawJson) {
         if (rawJson == null || rawJson.isEmpty()) {
             System.out.println("No data to process");
             return null;
         }
 
         try {
+            MovieStreamingProviderDTO movieStreamingProvider = new MovieStreamingProviderDTO();
+
             JSONObject jsonResponse = new JSONObject(rawJson);
 
             JSONObject usProviders = jsonResponse.getJSONObject("results").getJSONObject("US");
-
-            Movie movie = new Movie(movieId, "Sample movie");
 
             JSONArray buyArray = usProviders.optJSONArray("buy");
             if (buyArray != null) {
                 for (int i = 0; i < buyArray.length(); i++) {
                     JSONObject provider = buyArray.getJSONObject(i);
-                    movie.addBuyProvider(provider.getString("provider_name"));
+                    ProviderDTO providerDTO = new ProviderDTO(provider.getString("provider_name"), providerBaseURL + provider.getString("logo_path"));
+                    movieStreamingProvider.addBuyProvider(providerDTO);
                 }
             }
 
             JSONArray flatrateArray = usProviders.optJSONArray("flatrate");
             if (flatrateArray != null) {
                 for (int i = 0; i < flatrateArray.length(); i++) {
-                    JSONObject provier = flatrateArray.getJSONObject(i);
-                    movie.addFlatrateProvider(provier.getString("provider_name"));
+                    JSONObject provider = flatrateArray.getJSONObject(i);
+                    ProviderDTO providerDTO = new ProviderDTO(provider.getString("provider_name"), providerBaseURL + provider.getString("logo_path"));
+                    movieStreamingProvider.addStreamingProvider(providerDTO);
                 }
             }
 
@@ -39,11 +47,12 @@ public class MovieProcessingService {
             if (rentArray != null) {
                 for (int i = 0; i < rentArray.length(); i++) {
                     JSONObject provider = rentArray.getJSONObject(i);
-                    movie.addRentProvider(provider.getString("provider_name"));
+                    ProviderDTO providerDTO = new ProviderDTO(provider.getString("provider_name"), providerBaseURL + provider.getString("logo_path"));
+                    movieStreamingProvider.addRentProvider(providerDTO);
                 }
             }
 
-            return movie;
+            return movieStreamingProvider;
         } catch (Exception e) {
             e.printStackTrace();
             return null;

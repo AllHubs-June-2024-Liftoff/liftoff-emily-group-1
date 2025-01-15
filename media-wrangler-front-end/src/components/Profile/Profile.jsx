@@ -4,6 +4,7 @@ import { useAuth } from "../../Services/AuthContext";
 import ProfileHeader from "./ProfileHeader";
 import FavoriteFilms from "./FavoriteFilms";
 import PosterCard from "../MoviePosterCard/PosterCard";
+import RecentActivity from "./RecentActivity";
 
 const Profile = () => {
     const { userId } = useParams();
@@ -16,7 +17,7 @@ const Profile = () => {
         <div>
             <ProfileHeader user={user} />
             <FavoriteFilms />
-            
+            <RecentActivity />
         </div>
     )
 };

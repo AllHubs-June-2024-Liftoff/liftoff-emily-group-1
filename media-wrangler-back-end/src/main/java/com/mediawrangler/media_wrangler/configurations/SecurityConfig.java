@@ -18,11 +18,17 @@ public class SecurityConfig implements WebMvcConfigurer {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf(csrf -> csrf.disable())
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()));
+        // disable CSRF and configure CORS
+        http.csrf(csrf -> csrf.disable()) // Disable CSRF for APIs
+                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Set up CORS
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/users/register", "/users/login", "/", "/movies", "/reviews/create", "/reviews/view/{id}").permitAll()  // Allow GET requests to API
+                        .anyRequest().authenticated()  // Secure other requests
+                );
         return http.build();
     }
 
+    // configure CORS settings
     private CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration corsConfig = new CorsConfiguration();
         corsConfig.addAllowedOrigin("http://localhost:5173");
@@ -47,5 +53,4 @@ public class SecurityConfig implements WebMvcConfigurer {
         return new BCryptPasswordEncoder();
     }
 }
-
 

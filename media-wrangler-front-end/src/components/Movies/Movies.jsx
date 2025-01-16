@@ -1,6 +1,9 @@
 import React from "react";
 import MovieDetailCard from "../MovieDetails/MovieDetailCard";
-import MovieCard from "../MoviePosterCard/PosterCard";
+import MovieReviewListCard from "../ReviewDisplay/MovieReviewListCard";
+
+
+//This is just to display the PosterCard, MovieDetailCard & InteractionsCard
 
 export default function Movies() {
 
@@ -16,7 +19,7 @@ export default function Movies() {
         {id: 2, 
             title: "Elf", 
             poster: "https://th.bing.com/th/id/R.4a6b29fcf1ab7cf3691f3bf7fcd2643e?rik=LWBs8HixZr5cUw&riu=http%3a%2f%2fwww.nerdspan.com%2fwp-content%2fuploads%2f2013%2f12%2felf-movie-poster.jpg&ehk=wNRWgnn0Hmn8ACJ8cWPtVRUO0bHZuqR4Bbqf9qaDPbs%3d&risl=&pid=ImgRaw&r=0", 
-            releaseDate: 2003, 
+            releaseDate: "2003-11-07", 
             director: "Jon Favreau", 
             overview: "Raised as an oversized elf, Buddy travels from the North Pole to New York City to meet his biological father, Walter Hobbs, who doesn't know he exists and is in desperate need of some Christmas spirit.",
             genre: ["Comedy", "Adventure", "Family", "Fantasy", "Romance" ]
@@ -36,21 +39,18 @@ export default function Movies() {
         <>
             <h1>Browse for movies</h1>
             <MovieDetailCard 
-                id={ movies[1].id }
+                movieId={ movies[1].id }
                 title={ movies[1].title }
                 poster={ movies[1].poster } 
                 releaseDate={ movies[1].releaseDate }
                 overview={ movies[1].overview }
+                genre= {movies[1].genre}
             />
 
-            <MovieCard     
-                id={ movies[1].id }
-                title={ movies[1].title }
-                poster={ movies[1].poster } 
-                releaseDate={ movies[1].releaseDate }
-                overview={ movies[1].overview } 
-            />
-    
+        <MovieReviewListCard />
+        <MovieReviewListCard />
+        <MovieReviewListCard />
+        <MovieReviewListCard /> 
         </>
         
 

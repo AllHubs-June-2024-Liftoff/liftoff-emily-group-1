@@ -24,4 +24,13 @@
     flex-direction: column;
     gap: 10px;  /* Optional: space between different interaction components */
   }
+
+  .movie-detail-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    border: 2px solid white;
+    padding: 10px;
+  }
   

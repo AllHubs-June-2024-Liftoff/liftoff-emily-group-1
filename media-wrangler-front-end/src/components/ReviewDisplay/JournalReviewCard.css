@@ -1,0 +1,52 @@
+
+
+.spoiler-alert {
+    font-size: 16px;
+    color: #d50000;
+    display: flex;
+    padding: 5px;
+}
+
+
+.user-review {
+    margin: 15px;
+    width: 800px;
+   
+}
+
+
+.movie-info-container {
+    padding: 15px;
+    display:inline-flex;  
+}
+
+
+.username {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+
+ 
+.paper-container {
+display: flex;
+justify-content: center;
+align-items: center;
+min-height: 50vh;
+}
+
+.review-container {
+display: flex;
+justify-content: center;
+align-items: center;
+gap: 20px;
+border: 2px solid white;
+padding: 10px;
+}
+
+
+ 
+ 
+
+

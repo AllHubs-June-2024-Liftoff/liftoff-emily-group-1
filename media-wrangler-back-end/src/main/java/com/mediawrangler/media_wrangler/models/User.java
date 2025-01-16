@@ -5,6 +5,9 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 public class User {
 
@@ -34,6 +37,23 @@ public class User {
     @Email(message = "Invalid email format")
     @Column(unique = true, nullable = false)
     private String email;
+
+
+//TODO: uncomment when ready to map by user
+//    @OneToMany(mappedBy = "user")
+//    private List<MovieReview> movieReviews = new ArrayList<>();
+
+    public User(String username, String firstname, String lastname, String password, String email) {
+        this.username = username;
+        this.firstname = firstname;
+        this.lastname = lastname;
+        this.password = password;
+        this.email = email;
+    }
+
+    public User() {
+    }
+
 
     public int getId() {
         return id;
@@ -82,4 +102,13 @@ public class User {
     public void setLastname(String lastname) {
         this.lastname = lastname;
     }
+
+//TODO: uncomment when ready to build relationship between reviews and users
+//    public List<MovieReview> getMovieReviews() {
+//        return movieReviews;
+//    }
+//
+//    public void setMovieReviews(List<MovieReview> movieReviews) {
+//        this.movieReviews = movieReviews;
+//    }
 }

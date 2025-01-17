@@ -2,7 +2,7 @@ import { useState } from "react";
 import React from "react";
 
 import 'bulma/css/bulma.min.css';
-import './ReviewForm.css';
+// import './ReviewForm.css';
 import StarRatings from 'react-star-ratings';
 
 

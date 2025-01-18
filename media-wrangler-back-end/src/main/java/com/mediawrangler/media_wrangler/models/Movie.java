@@ -1,6 +1,17 @@
 package com.mediawrangler.media_wrangler.models;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
+
+import java.util.List;
+
+@Entity
 public class Movie {
+
+    @Id
+    @GeneratedValue
     private int id;
     private String title;
     private String releaseDate;
@@ -8,6 +19,8 @@ public class Movie {
     private String overview;
     private String posterPath;
 
+    @ManyToMany(mappedBy = "movies")
+    private List<MovieList> movieLists;
 
     public Movie() {
 
@@ -22,7 +35,6 @@ public class Movie {
         this.posterPath = posterPath;
     }
 
-    // Getters and Setters
 
     public int getId() {
         return id;
@@ -70,6 +82,14 @@ public class Movie {
 
     public void setPosterPath(String posterPath) {
         this.posterPath = posterPath;
+    }
+
+    public List<MovieList> getMovieLists() {
+        return movieLists;
+    }
+
+    public void setMovieLists(List<MovieList> movieLists) {
+        this.movieLists = movieLists;
     }
 
     @Override

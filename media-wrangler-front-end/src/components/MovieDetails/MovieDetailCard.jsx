@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useState,useEffect } from 'react';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
@@ -9,11 +10,17 @@ import Button from '@mui/material/Button';
 import './MovieDetailCard.css';
 import PropTypes from 'prop-types';
 import MovieInteractions from '../MovieInteractions/InteractionsCard';
-
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import axios from "axios";
 
 
 
 function MovieDetailCard({ title, releaseDate, overview, poster, id }) {
+    const [anchorEl, setAnchorEl] = useState(null);
+    const [userLists, setUserLists] = useState([]);
+    const [newListName, setNewListName] = useState("");
+  
 
   //NOTE: The Movie Database (TMDb), the base URL for images might look like https://image.tmdb.org/t/p/w500. So, you would construct the full URL by concatenation... I didn't want image so large, so I altered the base URL
 
@@ -35,6 +42,40 @@ function MovieDetailCard({ title, releaseDate, overview, poster, id }) {
     function handlePosterClick() {
         console.log("clicked movie poster");
     }
+
+    useEffect(() => {
+        axios.get("http://localhost:8080/api/lists/user", { withCredentials: true })
+          .then((response) => setUserLists(response.data))
+          .catch((error) => console.error("Error fetching user lists:", error));
+      }, []);
+    
+      const handleMenuClick = (event) => {
+        setAnchorEl(event.currentTarget);
+      };
+    
+      const handleMenuClose = () => {
+        setAnchorEl(null);
+      };
+    
+      const handleAddToList = (listName) => {
+        axios.post(
+          "http://localhost:8080/api/lists/add",
+          { listName, movieId: id },
+          { withCredentials: true }
+        )
+        .then(() => {
+          alert(`Added to ${listName}`);
+          handleMenuClose();
+        })
+        .catch((error) => console.error("Error adding movie to list:", error));
+      };
+    
+      const handleCreateNewList = () => {
+        if (newListName.trim()) {
+          handleAddToList(newListName);
+          setNewListName("");
+        }
+      };
 
 
   return (
@@ -73,6 +114,35 @@ function MovieDetailCard({ title, releaseDate, overview, poster, id }) {
                     <Button onClick={handleWatched}
                         size="small">Watched</Button>
                 </CardActions>
+                <CardActions>
+                    <Button onClick={handleWantToWatch} size="small">
+                        Want to Watch
+                    </Button>
+                    <Button onClick={handleWatched} size="small">
+                        Watched
+                    </Button>
+                    {/* Add button for adding to list */}
+                    <Button onClick={handleMenuClick} size="small">
+                        + Add
+                    </Button>
+                    {/* Dropdown menu for list selection */}
+                    <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
+                        {userLists.map((list) => (
+                        <MenuItem key={list.id} onClick={() => handleAddToList(list.name)}>
+                            {list.name}
+                        </MenuItem>
+                        ))}
+                        <MenuItem>
+                        <input
+                            type="text"
+                            placeholder="New List"
+                            value={newListName}
+                            onChange={(e) => setNewListName(e.target.value)}
+                        />
+                        <Button onClick={handleCreateNewList}>Create</Button>
+                        </MenuItem>
+                    </Menu>
+                    </CardActions>
 
                 {/* Leaving here to keep an eye on functionality for now-- especially if adding more props */}
                 {/* <StarRating title={ title } id={ id } />

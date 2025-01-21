@@ -2,11 +2,15 @@ import React, { useState, useEffect } from "react";
 import { useAuth } from "../../Services/AuthContext";
 import "./UpcomingReleases.css";
 import StarIcon from "@mui/icons-material/Star";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
 
 function AddEventForm() {
   const { user } = useAuth();
   const [upcomingMovies, setUpcomingMovies] = useState([]);
   const [error, setError] = useState(null);
+  const [anchorEl, setAnchorEl] = useState(null); // Tracks the anchor element for the dropdown
+  const [selectedMovie, setSelectedMovie] = useState(null); // Tracks the currently selected movie
 
   useEffect(() => {
     const fetchUpcomingMovies = async () => {
@@ -62,6 +66,18 @@ function AddEventForm() {
       console.error("Error adding movie to events:", error);
       alert("An error occurred while adding the movie to your events.");
     }
+
+    handleMenuClose();
+  };
+
+  const handleMenuOpen = (event, movie) => {
+    setAnchorEl(event.currentTarget);
+    setSelectedMovie(movie);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+    setSelectedMovie(null);
   };
 
   return (
@@ -82,16 +98,43 @@ function AddEventForm() {
             </div>
             <button
               className="addButton"
-              onClick={() => handleAddMovieToEvents(movie)}
+              onClick={(event) => handleMenuOpen(event, movie)}
             >
               <StarIcon style={{ color: "white", fontSize: "20px" }} />
             </button>
           </div>
         ))}
       </div>
+
+      {/* Dropdown Menu */}
+      <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleMenuClose}
+        PaperProps={{
+          style: {
+            padding: "8px",
+            borderRadius: "8px",
+            backgroundColor: "#f4e1d2",
+            boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+          },
+        }}
+      >
+        <MenuItem
+          onClick={() => handleAddMovieToEvents(selectedMovie)}
+          sx={{
+            fontWeight: "bold",
+            color: "#9e5231",
+            "&:hover": {
+              backgroundColor: "#f6d8c3",
+            },
+          }}
+        >
+          Add to Calendar
+        </MenuItem>
+      </Menu>
     </div>
   );
 }
 
 export default AddEventForm;
-

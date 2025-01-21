@@ -4,6 +4,7 @@ import './MovieDetailCard.css';
 import PropTypes from 'prop-types';
 import InteractionsCard from '../MovieInteractionComponent/InteractionsCard';
 import MovieDetailsNav from '../nav/MovieDetailsNav';
+import AddToListMenu from "../InteractiveSoloComponents/AddToListButton";
 
 
 
@@ -83,6 +84,9 @@ function MovieDetailCard({ movieDetails }) {
                                 <b>Overview: </b>{ movieDetails.overview }
                             </Typography>          
                         </CardContent>
+                        <CardActions>
+          <AddToListMenu movieId={movieDetails.id} />
+        </CardActions>
                     </div> 
                     <CardActions>
                         <Button onClick={handleWantToWatch}

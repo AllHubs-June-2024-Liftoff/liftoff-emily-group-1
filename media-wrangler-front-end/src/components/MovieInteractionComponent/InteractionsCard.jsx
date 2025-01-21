@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import AddIcon from '@mui/icons-material/Add';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import { useAuth } from '../../Services/AuthContext';
+import AddToListMenu from "../InteractiveSoloComponents/AddToListButton";
 
 /*
     TODO: The "Add to Lists" and "Your Journal" buttons need to be handled once these features are setup and ready for it.
@@ -103,12 +104,9 @@ function InteractionsCard({ movieDetails }) {
                 <span className="button-label">Write Review</span>   
             </div>
             </Button>,
-            <Button key="four" className="button-container">
-                <div className="button-content">
-                    <span className="button-label"> Add to Lists </span>
-                    <AddIcon />
-                </div>
-            </Button>,
+             <Button>
+             <AddToListMenu movieId={movieDetails.id} />
+           </Button>,
             <Button 
                 key="five" 
                 className="button-container"
@@ -141,6 +139,7 @@ function InteractionsCard({ movieDetails }) {
                 }}
             >
                 {buttons}
+                
             </ButtonGroup>
         </Box>
     </div>

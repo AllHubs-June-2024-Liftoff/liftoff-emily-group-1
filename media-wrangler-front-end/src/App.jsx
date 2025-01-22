@@ -36,7 +36,7 @@ function App() {
           <Route path="/reviews/view" element={<DisplayReview />} />
           <Route path="/reviews/view/:id" element={<JournalDisplayReview />} />
           <Route path="/reviews/user/:userId" element={<UserJournalPage />}/>   
-          <Route path="/questions" element={<DiscussionPage />} />
+          <Route path="/discussions" element={<DiscussionPage />} />
           <Route path="/questions/:id" element={<QuestionDetail />} />
         </Routes>
       </div>

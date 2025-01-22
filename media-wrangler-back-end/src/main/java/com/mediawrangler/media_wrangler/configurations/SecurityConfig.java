@@ -32,8 +32,7 @@ public class SecurityConfig implements WebMvcConfigurer {
                 .authorizeHttpRequests(auth -> auth
 //                        .requestMatchers(HttpMethod.DELETE, "/users/profile/**").authenticated()
                         .requestMatchers(
-                                 "/",
-                                "/users/**",
+                                 "/", "/users/**",
                                 "/movies",
                                 "/reviews/create",
                                 "api/movies/**",
@@ -43,8 +42,8 @@ public class SecurityConfig implements WebMvcConfigurer {
                                 "/users/profile/**",
                                 "/api/movies/**",
                                 "/users/profile/**",
-                                "/api/lists/**",
-                                "/api/events/**",
+                                "/lists/**",
+                                "/events/**",
                                 "/questions/**",
                                 "/answers/**"
                         ).permitAll()

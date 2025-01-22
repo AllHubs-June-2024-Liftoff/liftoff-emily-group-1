@@ -14,7 +14,7 @@ function EventComponent({ user }) {
     }
 
     try {
-      const response = await fetch("http://localhost:8080/api/events/add", {
+      const response = await fetch("http://localhost:8080/events/add", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

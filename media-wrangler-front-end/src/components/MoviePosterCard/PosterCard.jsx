@@ -27,7 +27,7 @@ function MovieCard({ movie }) {
   useEffect(() => {
     const fetchLists = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/api/lists/user-lists?userId=${userId}`);
+        const response = await fetch(`http://localhost:8080/lists/user-lists?userId=${userId}`);
         if (response.ok) {
           const data = await response.json();
           setLists(data);
@@ -73,7 +73,7 @@ function MovieCard({ movie }) {
       };
   
       try {
-        const response = await fetch("http://localhost:8080/api/lists/add", {
+        const response = await fetch("http://localhost:8080/lists/add", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
@@ -108,7 +108,7 @@ function MovieCard({ movie }) {
       userId,
     };
 
-    fetch("http://localhost:8080/api/lists/add-movie", {
+    fetch("http://localhost:8080/lists/add-movie", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

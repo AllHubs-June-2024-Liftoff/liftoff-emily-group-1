@@ -9,8 +9,8 @@ function AddEventForm() {
   const { user } = useAuth();
   const [upcomingMovies, setUpcomingMovies] = useState([]);
   const [error, setError] = useState(null);
-  const [anchorEl, setAnchorEl] = useState(null); // Tracks the anchor element for the dropdown
-  const [selectedMovie, setSelectedMovie] = useState(null); // Tracks the currently selected movie
+  const [anchorEl, setAnchorEl] = useState(null); 
+  const [selectedMovie, setSelectedMovie] = useState(null);
 
   useEffect(() => {
     const fetchUpcomingMovies = async () => {
@@ -44,7 +44,7 @@ function AddEventForm() {
     const formattedEnd = `${movie.release_date}T23:59:59`;
 
     try {
-      const response = await fetch("http://localhost:8080/api/events/add", {
+      const response = await fetch("http://localhost:8080/events/add", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -58,9 +58,9 @@ function AddEventForm() {
       });
 
       if (response.ok) {
-        alert(`"${movie.title}" has been added to your events!`);
+        alert(`"${movie.title}" has been added to your Calendar!`);
       } else {
-        alert("Failed to add movie to your events.");
+        alert("Failed to add movie to your Calendar.");
       }
     } catch (error) {
       console.error("Error adding movie to events:", error);
@@ -81,23 +81,22 @@ function AddEventForm() {
   };
 
   return (
-    <div className="addEventForm-container">
+    <div className="upcoming-movie-container">
       <h2>Upcoming Movies</h2>
-      {error && <p>{error}</p>}
 
-      <div id="movie-search" className="movie-search">
+      <div id="upcoming-movies">
         {upcomingMovies.map((movie) => (
-          <div key={movie.id} className="posterContainer">
+          <div key={movie.id} className="upcoming-poster">
             <img
               src={`https://image.tmdb.org/t/p/w200${movie.poster_path}`}
               alt={`Poster of ${movie.title}`}
-              className="posterImage"
+              className="upcoming-poster-image"
             />
             <div>
               <p>Release Date: {new Date(movie.release_date).toLocaleDateString()}</p>
             </div>
             <button
-              className="addButton"
+              className="addToCalendar"
               onClick={(event) => handleMenuOpen(event, movie)}
             >
               <StarIcon style={{ color: "white", fontSize: "20px" }} />
@@ -106,13 +105,12 @@ function AddEventForm() {
         ))}
       </div>
 
-      {/* Dropdown Menu */}
       <Menu
         anchorEl={anchorEl}
         open={Boolean(anchorEl)}
         onClose={handleMenuClose}
-        PaperProps={{
-          style: {
+        sx={{
+          "& .MuiPaper-root": {
             padding: "8px",
             borderRadius: "8px",
             backgroundColor: "#f4e1d2",

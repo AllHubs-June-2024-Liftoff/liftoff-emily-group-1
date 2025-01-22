@@ -27,7 +27,7 @@ function CalendarPlaceholder({ user }) {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/api/events/user/${user.id}`);
+        const response = await fetch(`http://localhost:8080/events/user/${user.id}`);
         if (response.ok) {
           const data = await response.json();
           const formattedEvents = data.map((event) => ({
@@ -58,7 +58,7 @@ function CalendarPlaceholder({ user }) {
     }
 
     try {
-      const response = await fetch("http://localhost:8080/api/events/add", {
+      const response = await fetch("http://localhost:8080/events/add", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

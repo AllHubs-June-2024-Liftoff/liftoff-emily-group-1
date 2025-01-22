@@ -15,7 +15,7 @@ const MovieListTable = () => {
   useEffect(() => {
     const fetchMovieLists = async () => {
       try {
-        const response = await fetch('http://localhost:8080/api/lists/all');
+        const response = await fetch('http://localhost:8080/lists/all');
         if (response.ok) {
           const data = await response.json();
           const userMovieLists = data.filter((list) => list.user.id === user.id);
@@ -73,7 +73,7 @@ const MovieListTable = () => {
   const handleDelete = async (listId, movieId) => {
     try {
       const response = await fetch(
-        `http://localhost:8080/api/lists/${listId}/movie/${movieId}`,
+        `http://localhost:8080/lists/${listId}/movie/${movieId}`,
         {
           method: 'DELETE',
         }

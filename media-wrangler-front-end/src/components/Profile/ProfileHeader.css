@@ -1,0 +1,81 @@
+.profile-header-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    background-color: #9e5231;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border-radius: 12px;
+    max-width: 650px;
+}
+
+.profile-header-content {
+    width: 100%;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    word-wrap: break-word; 
+    word-break: break-word; 
+    overflow-wrap: break-word;
+}
+
+.profile-avatar {
+    position: relative;
+    width: 150px !important; 
+    height: 150px !important;
+    border-radius: 50%;
+    border: 2px solid #000;
+    margin-bottom: 20px;
+    background-image: url('/Avatar2.jpg'); 
+    background-size: cover; 
+    background-position: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: black !important; 
+    font-size: 66px !important; 
+    font-weight: bold;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 
+                 0 0 20px rgba(255, 255, 255, 0.6),
+                 0 0 30px rgba(255, 255, 255, 0.4);
+}
+
+.avatar-initials {
+    transform: rotate(-10deg); 
+    display: inline-block; 
+}
+
+
+
+.profile-edit-form input,
+.profile-edit-form textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-bottom: 8px;
+}
+
+.profile-bio-textarea {
+    resize: none;
+    text-align: center; 
+}
+
+.profile-view-content {
+    flex-grow: 1;
+    text-align: center; 
+}
+
+.profile-bio {
+    font-style: italic;
+    text-align: center; 
+}
+
+.edit-profile-button {
+    margin-left: auto;
+    display: block;
+    text-align: center; 
+}

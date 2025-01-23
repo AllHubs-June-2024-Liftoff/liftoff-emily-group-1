@@ -1,6 +1,9 @@
 package com.mediawrangler.media_wrangler.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -19,12 +22,12 @@ public class MovieReview {
     private LocalDate dateCreated;
 
 
-//    @NotNull(message = "You must enter a date watched")
+    @NotNull(message = "You must enter a date watched")
     private LocalDate dateWatched;
 
 //    Might want to change the max to higher than 1000
-//    @NotBlank(message = "We want to hear your thoughts, write your movie review")
-//    @Size(max = 1000, message = "Review must be less than 1000 characters")
+    @NotBlank(message = "We want to hear your thoughts, write your movie review")
+    @Size(max = 1000, message = "Review must be less than 1000 characters")
     private String review;
 
 //TODO: Still have to get spoiler checkbox logging correctly...changed back to boolean to see if I can get it to work
@@ -32,23 +35,29 @@ public class MovieReview {
 
     private String award;
 
-//    @NotNull(message = "You must give movie a star rating")
+    @NotNull(message = "You must give movie a star rating")
     private int rating;
 
     private String watchAgain;
 
     private List<String> tags = new ArrayList<>();
 
-//TODO: uncomment when ready to test with user
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
+    private User user;
+
+//TODO: uncomment when ready to test relationships
 //    @ManyToOne
-//    @JoinColumn(name = "user_id")
-//    private User user;
+//    private List<Comment> comments;
+
 
     //To track the movie until movie data gets sent to database from API
     private String title;
-    private String poster;
+    private String fullPosterURL;
     private String yearReleased;
 
+    private Long movieId;
 
 
     //empty constructor for hibernate
@@ -56,7 +65,8 @@ public class MovieReview {
     }
 
     //overloaded constructor for easier testing (without User logged in)
-    public MovieReview(String review, LocalDate dateWatched, boolean isSpoiler, String award, int rating, String watchAgain, String title, String poster, String yearReleased) {
+    public MovieReview(String review, LocalDate dateWatched, boolean isSpoiler, String award, int rating,
+                       String watchAgain, String title, String fullPosterURL, String yearReleased, User user, Long movieId ) {
         this.dateCreated = LocalDate.now();
         this.review = review;
         this.dateWatched = dateWatched;
@@ -65,12 +75,24 @@ public class MovieReview {
         this.rating = rating;
         this.watchAgain = watchAgain;
         this.title = title;
-        this.poster = poster;
+        this.fullPosterURL = fullPosterURL;
         this.yearReleased = yearReleased;
+        this.user = user;
+        this.movieId = movieId;
     }
 
 
+    //* getters for id and dateCreated since they should update (I could make an editDate)
+    public Long getId() {
+        return id;
+    }
 
+    public LocalDate getDateCreated() {
+        return dateCreated;
+    }
+
+
+    //* All the review fields here...
     public int getRating() {
         return rating;
     }
@@ -119,6 +141,17 @@ public class MovieReview {
         this.watchAgain = watchAgain;
     }
 
+    public List<String> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<String> tags) {
+        this.tags = tags;
+    }
+
+
+
+    //* All the movie details here...
     public String getTitle() {
         return title;
     }
@@ -127,21 +160,12 @@ public class MovieReview {
         this.title = title;
     }
 
-    public String getPoster() {
-        return poster;
+    public String getFullPosterURL() {
+        return fullPosterURL;
     }
 
-    public void setPoster(String poster) {
-        this.poster = poster;
-    }
-
-
-    public List<String> getTags() {
-        return tags;
-    }
-
-    public void setTags(List<String> tags) {
-        this.tags = tags;
+    public void setFullPosterURL(String fullPosterURL) {
+        this.fullPosterURL = fullPosterURL;
     }
 
     public String getYearReleased() {
@@ -151,24 +175,26 @@ public class MovieReview {
     public void setYearReleased(String yearReleased) {
         this.yearReleased = yearReleased;
     }
-
-    //getters for id and dateCreated since they should update (I could make an editDate)
-    public Long getId() {
-        return id;
+    public Long getMovieId() {
+        return movieId;
     }
 
-    public LocalDate getDateCreated() {
-        return dateCreated;
+    public void setMovieId(Long movieId) {
+        this.movieId = movieId;
     }
 
-    //TODO: Uncomment when ready to test with User logged in
-//    public User getUser() {
-//        return user;
-//    }
-//
-//    public void setUser(User user) {
-//        this.user = user;
-//    }
+
+
+    //* User getter/setter here...
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+
 
 
 

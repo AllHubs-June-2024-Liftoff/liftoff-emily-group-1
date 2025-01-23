@@ -2,6 +2,7 @@ package com.mediawrangler.media_wrangler.controllers;
 
 
 import com.mediawrangler.media_wrangler.data.MovieReviewRepository;
+import com.mediawrangler.media_wrangler.dto.MovieReviewDTO;
 import com.mediawrangler.media_wrangler.models.MovieReview;
 import com.mediawrangler.media_wrangler.services.MovieReviewService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 
@@ -33,8 +37,7 @@ public class MovieReviewController {
 
 
 
-    //I currently do not have validation or errors to be checked for tester form
-    // Changed the saveReview object in the return response to a String message stating success
+
     @PostMapping("/create")
         public ResponseEntity<?> createReview(@RequestBody MovieReview movieReview) {
         try {
@@ -48,10 +51,10 @@ public class MovieReviewController {
     @GetMapping("view/{id}")
     public ResponseEntity<?> findReviewById(@PathVariable Long id) {
         try {
-            Optional<MovieReview> optionalMovieReview = movieReviewService.findReviewById(id);
+            Optional<MovieReviewDTO> optionalMovieReview = movieReviewService.getReviewById(id);
 
             if (optionalMovieReview.isPresent()) {
-                MovieReview savedReview = (MovieReview) optionalMovieReview.get();
+                MovieReviewDTO savedReview = (MovieReviewDTO) optionalMovieReview.get();
                 return new ResponseEntity<>(savedReview, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>("Review not found", HttpStatus.NOT_FOUND);
@@ -62,7 +65,20 @@ public class MovieReviewController {
     }
 
 
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<?> findAllReviewsByUser(@PathVariable int userId) {
+        try {
+            List<MovieReviewDTO> userReviews = movieReviewService.getReviewsByUser(userId);
 
+            if (userReviews.isEmpty()) {
+                return ResponseEntity.ok(Collections.emptyList());
+            } else {
+                return new ResponseEntity<>(userReviews, HttpStatus.OK);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>("An error occurred while retrieving reviews", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
 
 }

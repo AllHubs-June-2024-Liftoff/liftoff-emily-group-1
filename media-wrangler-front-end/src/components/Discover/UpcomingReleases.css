@@ -1,0 +1,67 @@
+#movie-search {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 10px;
+  padding: 20px;
+  justify-items: center;
+}
+
+.posterContainer {
+  position: relative;
+  width: 150px;
+  margin: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.posterImage {
+  width: 100%;
+  border-radius: 8px;
+  transition: transform 0.3s ease, border 0.3s ease;
+  cursor: pointer;
+}
+
+.posterImage:hover {
+  transform: scale(1.05);
+  border: 2px solid rgb(99, 180, 176);
+}
+
+.addButton {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background-color: #4d6a6d;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease, background-color 0.3s ease;
+}
+
+.addButton:hover {
+  background-color: rgba(184, 100, 63, 0.9);
+  transform: scale(1.1);
+}
+
+.addButton:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(158, 82, 49, 0.5);
+}
+
+.addEventForm-container {
+  background-image: url('/Avatar.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  min-height: 100vh;
+  color: white;
+  padding: 20px;
+}

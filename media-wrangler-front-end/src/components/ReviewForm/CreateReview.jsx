@@ -11,19 +11,19 @@ export default function CreateReview() {
     console.log("Location state:", location.state);
 
     //we are going to destructure the props from the movie object
-    const { title, movieId, poster, releaseDate, genre } = location.state || {};
+    const { movieDetails } = location.state || {};
 
 
     return (
         <>
             {/* Pass the movie details to your forms */}
-            {title && movieId && poster && releaseDate && genre && (
+            { movieDetails && (
                 <AwardReviewForm 
-                    movieId={ movieId } 
-                    title={ title } 
-                    poster={ poster }
-                    releaseDate={ releaseDate }
-                    genre={ genre }
+                    movieId={ movieDetails.id } 
+                    title={ movieDetails.title } 
+                    posterPath={ movieDetails.posterPath }
+                    releaseDate={ movieDetails.releaseDate }
+                    
                 />
             )}
         </>

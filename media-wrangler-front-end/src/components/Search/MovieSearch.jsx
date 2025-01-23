@@ -7,26 +7,26 @@ function MovieSearch() {
     const [error, setError] = useState(null);
 
     const handleSearch = async () => {
-        setMovieData(null); 
-        setError(null); 
-
         try {
-          
-            const response = await fetch(`http://localhost:8080/api/movies/search?title=${movieTitle}`);
-
+            const response = await fetch(`http://localhost:8080/api/movies/search?title=${movieTitle}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+    
             if (!response.ok) {
                 throw new Error('Movie not found!');
             }
-
-        
+    
             const data = await response.json();
-            setMovieData(data); 
-            setError(null);      
+            setMovieData(data);
         } catch (error) {
-            setError(error.message); 
-            setMovieData(null); 
+            console.error('Error:', error);
+            setError(error.message);
         }
     };
+    
 
     return (
         <div>

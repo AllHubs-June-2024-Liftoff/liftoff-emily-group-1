@@ -1,23 +1,19 @@
 import React from 'react'
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import CardMedia from '@mui/material/CardMedia';
-import Typography from '@mui/material/Typography';
-import CardActions from '@mui/material/CardActions';
-import Button from '@mui/material/Button';
-import Divider from '@mui/material/Divider';
-import Stack from '@mui/material/Stack';
+import { Card, CardContent, Typography, CardActions, Button, Divider, Stack, Paper, Box } from '@mui/material';
 import StarRatingButton from '../InteractiveSoloComponents/StarRatingButton';
 import PriorityHighIcon from '@mui/icons-material/PriorityHigh';
 import "./JournalReviewCard.css";
-import { Paper } from "@mui/material";
+import PropType from 'prop-types';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CancelIcon from '@mui/icons-material/Cancel';
 
 
 
 
 
 
-export default function TestJournalReviewCard({ title, poster, watchAgain, tags, rating, isSpoiler, review, dateWatched, award, yearReleased }) {
+
+export default function JournalReviewCard({ title, fullPosterURL, watchAgain, tags, rating, isSpoiler, review, dateWatched, award, yearReleased }) {
     return (
         <>
          
@@ -26,7 +22,7 @@ export default function TestJournalReviewCard({ title, poster, watchAgain, tags,
             sx={{
                 maxWidth: 1200,
                 background: "#004d40",
-                margin: "30px",
+                margin: "30px auto",
                 padding: "20px",
                 transform: "scale(.9)",
                 transition: "transform 0.3s, box-shadow 0.3s",
@@ -41,10 +37,10 @@ export default function TestJournalReviewCard({ title, poster, watchAgain, tags,
                         <div>
                             {/* <Chip avatar={<Avatar>CHO</Avatar>} label={ username } /> */}
                        
-                            <Typography>
-                                <h3>Username here...</h3>
+                            <Typography variant='h6'>
+                                Username here...
                             <div>
-                                <img style={{height: "300px", width: "auto", margin: "10px"}} src={ poster } alt="movie poster" />
+                                <img style={{height: "300px", width: "auto", margin: "10px"}} src={ fullPosterURL } alt="movie poster" />
                             </div>
                             <StarRatingButton
                                 name="rating"
@@ -54,16 +50,13 @@ export default function TestJournalReviewCard({ title, poster, watchAgain, tags,
                             />                      
                             </Typography>
                             <Typography className="spoiler-alert" >                                                  
-                                {(isSpoiler && <p className="spoiler-alert"><PriorityHighIcon />Contains Spoilers </p>)}
+                                {(isSpoiler && <Typography className="spoiler-alert"><PriorityHighIcon />Contains Spoilers </Typography>)}
                             </Typography>
                         </div>                                    
                         <CardContent className="user-review">    
                             <Typography variant="h4" component="div">
                                 { title }
                                 <span style={{ fontSize: '1.5rem', margin: '0', color: "#ff8f00", fontWeight: '100' }}> ({ yearReleased }) </span>
-                                <Typography variant='body2' sx={{ color: 'text.secondary'}}>
-                                    Watched on { dateWatched }  
-                                </Typography>
                                 <hr style={{ background: isSpoiler ? "#d50000" : "teal" }} />
                             </Typography>                                                                          
                             <Typography variant="body1" sx={{ color: 'text.primary', textAlign: 'center', fontSize: '22px' }}>
@@ -75,6 +68,16 @@ export default function TestJournalReviewCard({ title, poster, watchAgain, tags,
                                 { review }
                             </Typography>
                             <br />
+                            <Typography variant='body2' sx={{ color: 'text.secondary'}}>
+                                    Watched on { dateWatched }  
+                            </Typography>
+                            <Box sx={{ display: "flex", alignItems: "center" }}>
+                                <Typography variant='body2' sx={{ color: 'text.secondary'}}>
+                                    Would You Watch Again?                                                          
+                                </Typography>
+                                {(watchAgain === "yes" ? <CheckCircleIcon sx={{fontSize: "25px", color: "blue", marginLeft: "5px"}} /> :                        <CancelIcon sx={{fontSize: "25px", color: "red", marginLeft: "5px"}} />  )}                           
+                            </Box>
+                            <br />
                             <Typography>
                                 <b>Your Tags:</b>
                             </Typography>    
@@ -85,7 +88,8 @@ export default function TestJournalReviewCard({ title, poster, watchAgain, tags,
                             >
                                 { tags.map((tag, index) => (
                                     <div key={tag.id}>
-                                        <Typography variant="body2" sx={{ color: 'text.secondary'}}>{tag}</Typography>
+                                        <Typography variant="body2" sx={{ color: 'text.secondary'}}>{ tag }
+                                        </Typography>
                                     </div>))}
                             </Stack>
                         </CardContent>            
@@ -102,4 +106,18 @@ export default function TestJournalReviewCard({ title, poster, watchAgain, tags,
            
         </>
     );
+}
+
+
+JournalReviewCard.propTypes = {
+    title: PropType.string, 
+    poster: PropType.string, 
+    watchAgain: PropType.string, 
+    tags: PropType.array, 
+    rating: PropType.number,    //<---- is it a number? User input is converted to strings, so would it actually be a string
+    isSpoiler: PropType.bool, 
+    review: PropType.string, 
+    dateWatched: PropType.string, 
+    award: PropType.string, 
+    yearReleased: PropType.string
 }

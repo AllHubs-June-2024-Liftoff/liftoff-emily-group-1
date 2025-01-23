@@ -1,6 +1,8 @@
 import React from "react";
 import MovieDetailCard from "../MovieDetails/MovieDetailCard";
 import MovieReviewListCard from "../ReviewDisplay/MovieReviewListCard";
+import MovieDetailsNav from "../nav/MovieDetailsNav";
+import { Paper } from "@mui/material";
 
 
 //This is just to display the PosterCard, MovieDetailCard & InteractionsCard
@@ -37,20 +39,31 @@ export default function Movies() {
 
     return (
         <>
-            <h1>Browse for movies</h1>
-            <MovieDetailCard 
-                movieId={ movies[1].id }
-                title={ movies[1].title }
-                poster={ movies[1].poster } 
-                releaseDate={ movies[1].releaseDate }
-                overview={ movies[1].overview }
-                genre= {movies[1].genre}
-            />
+            {/* <Paper 
+                sx={{
+                    background: "#9e9e9e",
+                    margin: "auto",
+                    width: "80%",
+                    padding: "20px"
+                }}
+            > */}
+                <h1>Movie Details Page: </h1>
+                <MovieDetailCard 
+                    movieId={ movies[1].id }
+                    title={ movies[1].title }
+                    poster={ movies[1].poster } 
+                    releaseDate={ movies[1].releaseDate }
+                    overview={ movies[1].overview }
+                    genre= {movies[1].genre}
+                />
 
-        <MovieReviewListCard />
-        <MovieReviewListCard />
-        <MovieReviewListCard />
-        <MovieReviewListCard /> 
+                <MovieDetailsNav />
+
+                <MovieReviewListCard />
+                <MovieReviewListCard />
+                <MovieReviewListCard />
+                <MovieReviewListCard /> 
+            {/* </Paper> */}
         </>
         
 

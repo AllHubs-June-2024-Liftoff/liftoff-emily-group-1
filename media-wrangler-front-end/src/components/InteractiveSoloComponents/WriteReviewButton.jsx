@@ -1,9 +1,8 @@
 import React, { useState } from 'react'
-import DrawIcon from '@mui/icons-material/Draw';
-import IconButton from '@mui/material/IconButton';
+import { IconButton, Fab } from '@mui/material';
 import PropTypes from 'prop-types';
 import EditIcon from '@mui/icons-material/Edit';
-import Fab from '@mui/material/Fab';
+
 
 function WriteReviewButton({ title, id, onClick }) {
 
@@ -32,8 +31,10 @@ WriteReviewButton.propTypes = {
 
 /*
 
-NOTE:   I believe that maybe the location.state can be used to pass the username and userId down to the MovieReviewForm and InteractionsCard to help store 
-        their data properly. 
+NOTE:   I believe that maybe the location.state can be used to pass the username and userId down to the MovieReviewForm and InteractionsCard 
+        to help store their data properly. 
+
+TODO:   Look at local storage in order to set the username to the reviews
 
         if we use the location tracker and nothing is returned, then that means that a user is not logged in -- at which point I can have an alert that tells 
         the they must login to use those features (or register if they have not already)

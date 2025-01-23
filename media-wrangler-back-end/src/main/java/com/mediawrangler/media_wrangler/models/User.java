@@ -38,22 +38,27 @@ public class User {
     @Column(unique = true, nullable = false)
     private String email;
 
+    @Column(length = 500)
+    private String bio;
 
-//TODO: uncomment when ready to map by user
-//    @OneToMany(mappedBy = "user")
-//    private List<MovieReview> movieReviews = new ArrayList<>();
 
-    public User(String username, String firstname, String lastname, String password, String email) {
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<MovieReview> movieReviews;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Comment> comments = new ArrayList<>();
+
+    public User(String username, String firstname, String lastname, String password, String email, String bio) {
         this.username = username;
         this.firstname = firstname;
         this.lastname = lastname;
         this.password = password;
         this.email = email;
+        this.bio = bio;
     }
 
     public User() {
     }
-
 
     public int getId() {
         return id;
@@ -103,12 +108,19 @@ public class User {
         this.lastname = lastname;
     }
 
-//TODO: uncomment when ready to build relationship between reviews and users
-//    public List<MovieReview> getMovieReviews() {
-//        return movieReviews;
-//    }
-//
-//    public void setMovieReviews(List<MovieReview> movieReviews) {
-//        this.movieReviews = movieReviews;
-//    }
+    public String getBio() {
+        return bio;
+    }
+
+    public void setBio(String bio) {
+        this.bio = bio;
+    }
+
+    public List<MovieReview> getMovieReviews() {
+        return movieReviews;
+    }
+
+    public void setMovieReviews(List<MovieReview> movieReviews) {
+        this.movieReviews = movieReviews;
+    }
 }

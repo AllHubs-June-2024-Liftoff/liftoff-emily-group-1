@@ -1,103 +1,112 @@
-import React, { useContext } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { useAuth } from '../../Services/AuthContext.jsx'
-import Box from '@mui/material/Box'
-import Tabs from '@mui/material/Tabs'
-import Tab from '@mui/material/Tab'
+import * as React from 'react';
+import Box from '@mui/material/Box';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import { Link, useLocation } from 'react-router-dom';
+import { useAuth } from '../../Services/AuthContext';
 
 export default function Navbar() {
   const location = useLocation();
-  const navigate = useNavigate();
   const { user, logoutAction } = useAuth();
-
   const [value, setValue] = React.useState(0);
 
-  const tabRoutes = user
-  ? ['/', '/movies', '/search', `/profile/${user.id}`, '/logout']
-  : ['/', '/movies', '/search', '/login', '/register'];
+  const tabs = [
+    { label: "Home", path: "/" },
+    { label: "Discover", path: "/discover" },
+    { label: "Search", path: "/search" },
+    ...(user
+      ? [
+          { label: "Profile", path: `/profile/${user.id}` },
+          { label: "Log Out", onClick: () => handleLogout() },
+        ]
+      : [
+          { label: "Log In", path: "/login" },
+          { label: "Register", path: "/register" },
+        ]),
+  ];
 
   React.useEffect(() => {
-    const currentTab = tabRoutes.indexOf(location.pathname);
-    if (currentTab !== -1) {
-      setValue(currentTab);
-    } else {
-      setValue(0);
-    }
-  }, [location.pathname, tabRoutes]);
+    const currentIndex = tabs.findIndex((tab) =>
+      tab.path ? tab.path === location.pathname : false
+    );
+    setValue(currentIndex >= 0 ? currentIndex : 0);
+  }, [location.pathname, user, tabs]);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
 
-  const handleSignOut = async () => {
+  const handleLogout = async () => {
     try {
       await logoutAction();
-      navigate("/");
     } catch (error) {
-      console.error("Logout failed:", error);
+      console.error("Logout error:", error);
     }
   };
 
   return (
-    <Box sx={{
-        display: 'flex',
-        flexDirection: { xs: 'column', sm: 'row' },
-        alignItems: 'center',
-        // justifyContent: 'space-between',
-        bgcolor: 'background.paper',
-        padding: 2,
-        flexWrap: 'nowrap',
-        overflowX: 'auto',
-      }}>
-        <Box sx={{ 
+    <Box 
+      sx={{ 
+        display: "flex",
+        flexDirection: { xs: "column", sm: "row" },
+        alignItems: "center",
+        justifyContent: "space-between",
+        bgcolor: "background.paper",
+        padding: 2, 
+      }}
+    >
+      <Box
+        component={Link}
+        to="/"
+        sx={{
           fontSize: { xs: 24, sm: 36 },
-          fontWeight: 'bold',
-          fontFamily: 'sans-serif',
-          textAlign: { xs: 'center', sm: 'left' },
-          flexShrink: 0,
-          marginRight: 2, 
-        }}>
-          Media Wrangler
-        </Box>
-        <Box sx={{
-          flexGrow: 1,
-          maxWidth: '100%',
-          minWidth: 0,
-          bgcolor: 'background.paper',
-          padding: 2,
-        }}>
-        <Tabs 
-          value={value} 
-          onChange={handleChange} 
-          variant='scrollable'
-          scrollButtons="auto" 
-        >
-          <Tab label="Home" component={Link} to="/" sx={{ marginX: 3 }} />
-          <Tab label="Movies" component={Link} to="/movies" sx={{ marginX: 3 }} />
-          <Tab label="Search" component={Link} to="/search" sx={{ marginX: 3 }} />
+          fontWeight: "bold",
+          fontFamily: "sans-serif",
+          textAlign: { xs: "center", sm: "left" },
+          textDecoration: "none",
+          color: "grey",
+          width: { xs: "100%", sm: "auto" },
+        }}
+      >
+        Media Wrangler
+      </Box>
 
-          {!user ? (
-            <>
-              <Tab label="Log In" component={Link} to="/login" sx={{ marginX: 3 }} />
-              <Tab label="Register" component={Link} to="/register" sx={{ marginX: 3 }} />
-            </>
-          ) : (
-            <>
-              <Tab 
-                label="Profile" 
-                component={Link} 
-                to={user ? `/profile/${user.id}` : '/login'} 
-                sx={{ marginX: 3}} 
-              />
+      <Box
+        sx={{
+          flexGrow: 1,
+          maxWidth: "100%",
+          minWidth: 0,
+          bgcolor: "background.paper",
+          padding: 2,
+        }}
+      >
+        <Tabs
+          value={value}
+          onChange={handleChange}
+          variant="scrollable"
+          scrollButtons="auto"
+          TabIndicatorProps={{ style: { transition: "none" } }} // Optional: Disable tab indicator animation
+        >
+          {tabs.map((tab, index) =>
+            tab.path ? (
               <Tab
-                label="Log out"
-                onClick={handleSignOut}
-                sx={{ marginX: 3, cursor: 'pointer' }}
+                key={index}
+                label={tab.label}
+                component={Link}
+                to={tab.path}
+                sx={{ marginX: 3 }}
               />
-            </>
+            ) : (
+              <Tab
+                key={index}
+                label={tab.label}
+                onClick={tab.onClick}
+                sx={{ marginX: 3, cursor: "pointer" }}
+              />
+            )
           )}
         </Tabs>
-        </Box>
       </Box>
+    </Box>
   );
 }

@@ -5,14 +5,15 @@ import './ReviewForm.css';
 import { submitMovieReview } from "../../Services/MovieReviewService";
 import PropTypes from 'prop-types';
 import InputTags from "../InteractiveSoloComponents/InputTags";
-import { Checkbox } from "@mui/material";
+import { Checkbox, Paper } from "@mui/material";
 import RadioButton from '../InteractiveSoloComponents/RadioButton';
 import AwardEnum from "../enums/AwardEnum";
 import StarRatingButton from '../InteractiveSoloComponents/StarRatingButton';
-import Paper from '@mui/material/Paper';
+import { useAuth } from '../../Services/AuthContext';
 
 
-function AwardReviewForm({ title, genre, releaseDate, poster, movieId }) {
+
+function AwardReviewForm({ title, releaseDate, movieId, posterPath }) {
 
   const [dateWatched, setDateWatched] = useState("");
   const [review, setReview] = useState('');
@@ -27,13 +28,17 @@ function AwardReviewForm({ title, genre, releaseDate, poster, movieId }) {
   const [isHatedDisabled, setHatedDisabled] = useState(false);
   const [watchAgain, setWatchAgain] = useState('');
   
- 
+  const { user } = useAuth();
   const navigate = useNavigate();
+  
 
   const lovedAwards = Object.values(AwardEnum.loved);
   const hatedAwards = Object.values(AwardEnum.hated);
 
   const yearReleased = new Date(releaseDate).getFullYear();
+
+  const baseImageURL = "https://image.tmdb.org/t/p/w300";
+  const fullPosterURL = `${baseImageURL}${posterPath}`;
 
   function handleHatedAward(e){
     setHatedAward(e.target.value);
@@ -90,7 +95,7 @@ function AwardReviewForm({ title, genre, releaseDate, poster, movieId }) {
         }
       }
 
-      //add award and username into the object
+      
       const movieReviewData = { 
         dateWatched,
         review,
@@ -98,25 +103,25 @@ function AwardReviewForm({ title, genre, releaseDate, poster, movieId }) {
         rating,
         tags,
         title,
-        genre,
         movieId,
-        poster, 
+        fullPosterURL, 
         watchAgain,
         award,
-        yearReleased
+        yearReleased,
+        user
       }
 
-      alert("Thank you for your submission!");
-      console.log("Submitting review for: ", title + "(" + movieId + ")", "New review object: ", movieReviewData);
+     
+      console.log("Submitting review for:", movieReviewData);
     
 
       try {
         const responseMessage = await submitMovieReview(movieReviewData); 
 
         if (responseMessage === "Success") {
-          navigate("/reviews/view", {
-            state: movieReviewData
-          });
+          navigate(`/reviews/user/${user.id}`, {
+              state: movieReviewData, // Pass the movieReviewData as part of the navigation state
+          });    
         
 
         } else {
@@ -152,9 +157,9 @@ function AwardReviewForm({ title, genre, releaseDate, poster, movieId }) {
                       <h3 style={{ fontSize: '24px', fontWeight: 'bold', margin: '0' }}>
                        <b>{ title }</b> <span style={{ fontSize: '19px', margin: '0', color: "#ff8f00", fontWeight: '100' }}> ({ yearReleased }) </span> 
                       </h3>
-                      <p>{ genre.join(", ") }</p>
+                      {/* <p>{ genre.join(", ") }</p> */}
                     </div> 
-                <img src={ poster } ></img>
+                <img src={ fullPosterURL } ></img>
               </div>
               <form onSubmit={ handleSubmit }>              
                   <div className="review-form">
@@ -204,12 +209,14 @@ function AwardReviewForm({ title, genre, releaseDate, poster, movieId }) {
                             onChange={ handleLovedAward }
                             disabled={ isLovedDisabled }
                           >
+                           
                             <option value="">-- Select an Award --</option>
                             { lovedAwards.map((award) => (
                             <option key={ award.id } value={ award.value } title={ award.description }>
                                 { award.icon } { award.label }
                             </option>
                             ))}
+                           
                           </select>
                         </div>
                       </div>

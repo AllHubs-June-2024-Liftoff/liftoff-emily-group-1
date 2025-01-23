@@ -10,6 +10,8 @@ public class Movie {
     private double rating;
     private String overview;
     private String posterPath;
+    private ArrayList<CastMember> cast;
+    private ArrayList<CrewMember> crew;
 
     private List<String> buyProviders;
     private List<String> flatrateProviders;
@@ -21,13 +23,16 @@ public class Movie {
         this.rentProviders = new ArrayList<>();
     }
 
-    public Movie(int id, String title, String releaseDate, double rating, String overview, String posterPath) {
+    public Movie(int id, String title, String releaseDate, double rating, String overview,
+                 String posterPath, ArrayList<CastMember> cast, ArrayList<CrewMember> crew) {
         this.id = id;
         this.title = title;
         this.releaseDate = releaseDate;
         this.rating = rating;
         this.overview = overview;
         this.posterPath = posterPath;
+        this.cast = cast;
+        this.crew = crew;
         this.buyProviders = new ArrayList<>();
         this.flatrateProviders = new ArrayList<>();
         this.rentProviders = new ArrayList<>();
@@ -81,7 +86,21 @@ public class Movie {
         this.posterPath = posterPath;
     }
 
+    public ArrayList<CastMember> getCast() {
+        return cast;
+    }
 
+    public void setCast(ArrayList<CastMember> cast) {
+        this.cast = cast;
+    }
+
+    public ArrayList<CrewMember> getCrew() {
+        return crew;
+    }
+
+    public void setCrew(ArrayList<CrewMember> crew) {
+        this.crew = crew;
+    }
 
     @Override
     public String toString() {

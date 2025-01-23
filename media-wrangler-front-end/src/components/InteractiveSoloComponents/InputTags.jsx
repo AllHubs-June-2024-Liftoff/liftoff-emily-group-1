@@ -1,8 +1,5 @@
 import React, { useState } from "react";
-import Stack from "@mui/material/Stack";
-import Autocomplete from "@mui/material/Autocomplete";
-import TextField from "@mui/material/TextField";
-import { Chip } from "@mui/material";
+import { Chip, Autocomplete, TextField } from "@mui/material";
 import PropType from 'prop-types';
 
 
@@ -26,10 +23,9 @@ export default function InputTags({ onChange }) {
     const trimmedTags = newTags.map(tag => tag.trim());
     setTags(trimmedTags);
     onChange(trimmedTags);
-};
+  };
 
   return (
-    <Stack spacing={ 3 } sx={{ width: 500 }}>
       <Autocomplete
         multiple
         id="tags-free-solo"
@@ -72,7 +68,7 @@ export default function InputTags({ onChange }) {
                 },
               }
             }}
-            />
+          />
           )}
           renderTags={(value, getTagProps) => 
             value.map((option, index) => (
@@ -91,14 +87,12 @@ export default function InputTags({ onChange }) {
               />
             ))
           }
-        />
-    </Stack>
+      />
   );
 }
 
-InputTags.PropType = {
-  onChange: PropType.func.isRequired
+InputTags.propType = {
+  onChange: PropType.func
 }
 
 
-//TODO: add validation for onTagsChange -- I thought it would be a function ??

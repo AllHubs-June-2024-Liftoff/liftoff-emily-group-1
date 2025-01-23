@@ -7,13 +7,10 @@ import { fetchMovieReview } from "../../Services/MovieReviewService";
 
 
 
-export default function DisplayReview() {
+export default function JournalDisplayReview() {
     const { id } = useParams();
     const [review, setReview] = useState(null);
     const [loading, setLoading] = useState(true);
-
-
- 
 
 
     useEffect(() => {
@@ -40,13 +37,20 @@ export default function DisplayReview() {
 
     return (
         <>
-        <h1>Movie Review:</h1>
-        <JournalReviewCard {...review} />
-        
-       
-       
-
-
+            <h1>Movie Review:</h1>
+            <JournalReviewCard 
+                title = { review.title }
+                fullPosterURL = { review.fullPosterURL }
+                watchAgain = { review.watchAgain }
+                tags = { review.tags }
+                rating = { review.rating }
+                isSpoiler = { review.isSpoiler }
+                review = { review.review }
+                dateWatched = { review.dateWatched }
+                award = { review.award }
+                yearReleased = { review.yearReleased }
+            />
+             
         </>
     );
  

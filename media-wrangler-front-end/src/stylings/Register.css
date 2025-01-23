@@ -1,0 +1,90 @@
+.register-background {
+    background-image: url('Media Wrangler Background.jpg'); 
+    background-size: cover;
+    background-position: center;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .form-container {
+    background-color: rgba(158, 82, 49, 0.78); 
+    border-radius: 8px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    margin: auto; 
+    text-align: center;
+    width: auto; 
+    max-width: 600px; 
+    box-sizing: border-box;  
+    color: #ffffff;
+  }
+
+  .title {
+    font-size: 3rem;
+    font-weight: bold;
+    color: #333;
+    text-align: center;
+    margin-bottom: 1rem;
+    color:  #ffffff;
+    padding-top: 0;
+    margin-top: 0;
+  }
+
+  .register-logo {
+    display: block;
+    margin: 0 auto 1rem;
+    max-width: 400px;
+    height: auto;
+    padding-bottom: 0;
+    margin-bottom: 5px;
+  }
+
+  .field-row {
+    display: flex;
+    gap: 1rem; 
+  }
+  
+  .field-row .field {
+    flex: 1; 
+  }
+
+  .field-row .input {
+    width: 100%; 
+  }
+  
+  .input {
+    font-size: 1rem;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  .input:focus {
+    outline: none;
+    border-color: #9e5231;
+    box-shadow: 0 0 0 2px rgba(158, 82, 49, 0.3);
+  }
+  
+  .button {
+    font-size: 1rem;
+    padding: 0.75rem;
+    border: none;
+    border-radius: 4px;
+    background-color: #798478;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 20px;
+  }
+  
+  .button:hover {
+    background-color: #798478;
+  }
+  
+  .button.is-halfwidth {
+    width: 50%;
+  }

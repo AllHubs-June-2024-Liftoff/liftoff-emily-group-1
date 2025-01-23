@@ -1,6 +1,7 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import MovieDetailCard from "./MovieDetailCard";
+import StreamingProviders from "./StreamingProviders";
 
 function MovieDetailsPage() {
   const { id } = useParams();
@@ -52,6 +53,7 @@ function MovieDetailsPage() {
       {movieDetails && (
         <div>
             <MovieDetailCard movieDetails={ movieDetails } />
+            <StreamingProviders movieId={id} />
         </div>
       )}
       {/* <div>

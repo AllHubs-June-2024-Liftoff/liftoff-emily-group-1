@@ -1,5 +1,7 @@
 package com.mediawrangler.media_wrangler.services;
 
+import com.mediawrangler.media_wrangler.models.CastMember;
+import com.mediawrangler.media_wrangler.models.CrewMember;
 import com.mediawrangler.media_wrangler.models.Movie;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -74,8 +76,12 @@ public class MovieDataFetcher {
                     String overview = movieJson.getString("overview");
                     String posterPath = movieJson.optString("poster_path", null);
 
+                    //cast and crew data not currently needed for search
+                    ArrayList<CastMember> cast = null;
+                    ArrayList<CrewMember> crew = null;
 
-                    Movie movie = new Movie(id, title, releaseDate, rating, overview, posterPath);
+
+                    Movie movie = new Movie(id, title, releaseDate, rating, overview, posterPath, cast, crew);
 
                     movieArrayList.add(movie);
                 }
@@ -161,8 +167,12 @@ public class MovieDataFetcher {
                     String overview = movieJson.getString("overview");
                     String posterPath = movieJson.optString("poster_path", null);
 
+                    //cast and crew data not currently needed for search
+                    ArrayList<CastMember> cast = null;
+                    ArrayList<CrewMember> crew = null;
 
-                    Movie movie = new Movie(id, title, releaseDate, rating, overview, posterPath);
+
+                    Movie movie = new Movie(id, title, releaseDate, rating, overview, posterPath, cast, crew);
 
                     movieArrayList.add(movie);
                 }
@@ -214,7 +224,7 @@ public class MovieDataFetcher {
 
     // fetches movie details by ID
     private static Movie fetchMovieDetails(OkHttpClient client, int movieId) {
-        String apiUrl = "https://api.themoviedb.org/3/movie/" + movieId + "?" + "&language=en-US";
+        String apiUrl = "https://api.themoviedb.org/3/movie/" + movieId + "?&language=en-US" + "&append_to_response=credits";
 
         Request request = new Request.Builder()
                 .url(apiUrl)
@@ -232,6 +242,12 @@ public class MovieDataFetcher {
             // parse the movie details response
             String responseBody = response.body().string();
             JSONObject jsonResponse = new JSONObject(responseBody);
+            JSONArray castArray = jsonResponse.getJSONObject("credits").getJSONArray("cast");
+            JSONArray crewArray = jsonResponse.getJSONObject("credits").getJSONArray("crew");
+
+            // cast and crew arrays
+            ArrayList<CastMember> castMembers = new ArrayList<>();
+            ArrayList<CrewMember> crewMembers = new ArrayList<>();
 
             // Extract movie data
             String title = jsonResponse.getString("title");
@@ -240,8 +256,30 @@ public class MovieDataFetcher {
             String overview = jsonResponse.getString("overview");
             String posterPath = jsonResponse.getString("poster_path");
 
+            // iterate through cast
+            for (int i = 0; i < castArray.length(); i++) {
+                JSONObject castMemberObject = castArray.getJSONObject(i);
+                int id = castMemberObject.getInt("id");
+                String name = castMemberObject.getString("name");
+                String character = castMemberObject.getString("character");
+
+                // Add the cast member to the list
+                castMembers.add(new CastMember(id, name, character));
+            }
+
+            for (int i = 0; i < crewArray.length(); i++) {
+                JSONObject crewMemberObject = crewArray.getJSONObject(i);
+                int id = crewMemberObject.getInt("id");
+                String name = crewMemberObject.getString("name");
+                String department = crewMemberObject.getString("department");
+                String job = crewMemberObject.getString("job");
+
+                // Add the cast member to the list
+                crewMembers.add(new CrewMember(id, name, department, job));
+            }
+
             // return Movie object with data
-            return new Movie(movieId, title, releaseDate, rating, overview, posterPath);
+            return new Movie(movieId, title, releaseDate, rating, overview, posterPath, castMembers, crewMembers);
 
         } catch (Exception e) {
             e.printStackTrace();

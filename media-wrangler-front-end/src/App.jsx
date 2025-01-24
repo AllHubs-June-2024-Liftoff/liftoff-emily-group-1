@@ -10,13 +10,13 @@ import Profile from './components/Profile/Profile'
 import CreateReview from './components/ReviewForm/CreateReview'
 import DisplayReview from './components/ReviewDisplay/DisplayReview'
 import JournalDisplayReview from './components/ReviewDisplay/JournalDisplayReview'
-import QuestionDetail from './components/Discussions/Answers.jsx'
 import { AuthProvider } from './Services/AuthContext';
 import { ListProvider } from './Services/ListContext.jsx'
 import MovieDetailsPage from './components/MovieDetails/MovieDetailsPage'
 import UserJournalPage from './components/Journal/UserJournalPage'
-import DiscussionPage from './components/Discussions/Discussions.jsx'
 import DiscoverPage from './components/Discover/UpcomingReleases.jsx'
+import QuestionDetail from './components/Discussions/Answers.jsx'
+import Discussions from './components/Discussions/Discussions.jsx'
 
 function App() {
   return (
@@ -36,8 +36,8 @@ function App() {
           <Route path="/reviews/view" element={<DisplayReview />} />
           <Route path="/reviews/view/:id" element={<JournalDisplayReview />} />
           <Route path="/reviews/user/:userId" element={<UserJournalPage />}/>   
-          <Route path="/discussions" element={<DiscussionPage />} />
-          <Route path="/questions/:id" element={<QuestionDetail />} />
+          <Route path="/questions" element={<Discussions />} />
+          <Route path="/answers/:questionId" element={<QuestionDetail />} />
         </Routes>
       </div>
     </ListProvider>

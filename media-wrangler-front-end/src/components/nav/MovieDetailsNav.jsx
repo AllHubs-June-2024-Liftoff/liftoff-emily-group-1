@@ -8,8 +8,8 @@ import { Card, Typography, Tabs, Tab, Box } from '@mui/material';
 
 
 
-function MovieDetailsNav() {
-
+function MovieDetailsNav({ movieDetails }) {
+    
     const [value, setValue] = useState('one');
 
     const handleChange = (event, newValue) => {
@@ -17,15 +17,99 @@ function MovieDetailsNav() {
     };
 
 
-    //Need to provide the tabs with data to display from API... will make dynamic once merged with API branch
+    // parsing cast data
+    let tabOneCastString = ``
+    for (let i = 0; i < 10 && i < movieDetails.cast.length; i++) {
+      tabOneCastString += `${movieDetails.cast[i].name} as ${movieDetails.cast[i].character}\n`
+    }
+
+    
+    // parsing crew data
+    let directors = ""
+    let writers = ""
+    let cinematographer = ""
+    let editor = ""
+    let casting = ""
+    let producers = ""
+
+    console.log(movieDetails.crew)
+    for (let i = 0; i < movieDetails.crew.length; i++) {
+      let crewMember = movieDetails.crew[i]
+      
+      if (crewMember.job.trim() == "Director") {
+        if (directors === "") {
+          directors += crewMember.name
+        } else {
+          directors += `, ${crewMember.name}`
+        }
+      }
+
+      if (crewMember.job.trim() == "Writer" || crewMember.department.trim() == "Writing") {
+        if (writers === "") {
+          writers += crewMember.name
+        } else {
+          writers += `, ${crewMember.name}`
+        }
+      }
+
+      if (crewMember.job.trim() == "Director of Photography") {
+        if (cinematographer === "") {
+          cinematographer += crewMember.name
+        } else {
+          cinematographer += `, ${crewMember.name}`
+        }
+      }
+
+      if (crewMember.job.trim() == "Editor") {
+        if (editor === "") {
+          editor += crewMember.name
+        } else {
+          editor += `, ${crewMember.name}`
+        }
+      }
+
+      if (crewMember.job.trim().includes("Casting")) {
+        if (casting === "") {
+          casting += crewMember.name
+        } else {
+          casting += `, ${crewMember.name}`
+        }
+      }
+
+      if (crewMember.job.trim() == "Producer") {
+        if (producers === "") {
+          producers += crewMember.name
+        } else {
+          producers += `, ${crewMember.name}`
+        }
+      }
+    }
+
+    let tabTwoCrewString = 
+    `Director(s): ${directors}
+    Writer(s): ${writers}
+    Cinematography: ${cinematographer}
+    Editor(s): ${editor}
+    Casting: ${casting}
+    Producers: ${producers}
+    `
+
+    // creates an array of JSX Elements with new lines
+    const renderWithLineBreaks = (text) => {
+      return text.split('\n').map((line, index) => (
+          <Typography key={index} variant="body2" color="white">
+              {line}
+          </Typography>
+      ));
+  };
+
     const tabData = {
-        one: "Cast details go here",
-        two: "Crew details go here",
+        one: renderWithLineBreaks(tabOneCastString),
+        two: renderWithLineBreaks(tabTwoCrewString),
         three: "Movie details go here",
         four: "Release dates go here",
         five: "Genres go here"
     };
-
   
     return (
         <>

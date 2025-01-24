@@ -1,60 +1,53 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../Services/AuthContext";
 
-const DiscussionPage = () => {
+const Discussions = () => {
   const [questions, setQuestions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [questionText, setQuestionText] = useState("");
-  const [searchTerm, setSearchTerm] = useState("");
-  const { user } = useAuth();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchQuestions = async () => {
-      try {
-        const response = await fetch("http://localhost:8080/questions/view", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-        if (response.ok) {
-          const data = await response.json();
-          setQuestions(data);
-        } else {
-          console.error("Failed to fetch questions:", response.statusText);
-        }
-      } catch (error) {
-        console.error("Failed to fetch questions:", error.message);
-      }
-    };
+  const user = { id: 1 }; 
 
+  useEffect(() => {
     fetchQuestions();
   }, []);
 
-  const handleQuestionSubmit = async (e) => {
+  const fetchQuestions = async () => {
+    try {
+      const response = await fetch("http://localhost:8080/questions/view");
+      if (!response.ok) {
+        throw new Error("Failed to fetch questions");
+      }
+      const data = await response.json();
+      setQuestions(data);
+      setLoading(false);
+    } catch (err) {
+      setError(err.message);
+      setLoading(false);
+    }
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      if (!user) {
-        alert("You must be logged in to ask a question.");
-        return;
-      }
-
       const response = await fetch("http://localhost:8080/questions/new", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          questionText,
+          questionText: questionText,
           user: { id: user.id },
         }),
       });
 
+      console.log(questionText, user);
+
       if (response.ok) {
-        const newQuestion = await response.json();
-        setQuestions((prevQuestions) => [...prevQuestions, newQuestion]);
-        setQuestionText("");
+        setQuestionText(""); 
+        fetchQuestions(); 
         console.log("Question submitted successfully.");
       } else {
         console.error("Failed to submit question:", response.statusText);
@@ -64,27 +57,14 @@ const DiscussionPage = () => {
     }
   };
 
-  const filteredQuestions = questions.filter((question) =>
-    question.questionText.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
 
   return (
-    <div className="discussion-page">
-      <h1 className="title is-3">Discussion Forum</h1>
-
-      <div className="box">
-        <input
-          className="input"
-          type="text"
-          placeholder="Search questions..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-      </div>
-
-      <div className="box">
-        <form onSubmit={handleQuestionSubmit}>
-          <h2 className="title is-4">Ask a Question</h2>
+    <div className="container">
+      <form onSubmit={handleSubmit} className="box">
+        <h2 className="title is-4">Ask a Question</h2>
+        <div className="field">
           <textarea
             className="textarea"
             placeholder="Enter your question"
@@ -92,32 +72,40 @@ const DiscussionPage = () => {
             onChange={(e) => setQuestionText(e.target.value)}
             required
           ></textarea>
-          <button type="submit" className="button is-primary mt-3">
+        </div>
+        <div className="field">
+          <button type="submit" className="button is-primary">
             Submit
           </button>
-        </form>
-      </div>
+        </div>
+      </form>
 
-      <div className="box">
-        <h2 className="title is-4">Questions</h2>
-        <ul>
-          {filteredQuestions.map((question) => (
-            <li key={question.id} className="my-2">
-              <a
-                href="#"
-                onClick={(e) => {
-                  e.preventDefault();
-                  navigate(`/questions/${question.id}`);
-                }}
+      <div>
+        <h1 className="title is-3">Discussions</h1>
+        {questions.length > 0 ? (
+          <ul className="list is-hoverable">
+            {questions.map((question) => (
+              <li
+              key={question.id}
+              className="box"
+              style={{ cursor: "pointer" }}
+              onClick={() => {
+                console.log("Navigating to:", `/answers/${question.id}`);
+                navigate(`/answers/${question.id}`);
+              }}
               >
-                {question.questionText}
-              </a>
-            </li>
-          ))}
-        </ul>
+                <p><strong>Question:</strong> {question.questionText}</p>
+                <p><strong>Posted by User:</strong> {question.user.id}</p>
+                <p><strong>Timestamp:</strong> {new Date(question.timestamp).toLocaleString()}</p>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p>No questions available</p>
+        )}
       </div>
     </div>
   );
 };
 
-export default DiscussionPage;
+export default Discussions;

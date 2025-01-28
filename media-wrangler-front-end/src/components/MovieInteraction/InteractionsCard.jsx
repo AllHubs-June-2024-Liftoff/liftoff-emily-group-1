@@ -107,6 +107,7 @@ function InteractionsCard({ movieDetails }) {
         if(!user) {
             alert("You must be logged in to like a movie");
             navigate('/login');
+            return;
         }
         setLiked(!isLiked);
         setLikeCount(likeCount + 1);
@@ -141,10 +142,10 @@ function InteractionsCard({ movieDetails }) {
 
 
     function handleWriteReviewClick() {
-        if(!user) {
-            // alert("You must be logged in to like a movie");
-            
+        if(!userId) {
+            alert("You must be logged in to like a movie");            
             navigate('/login');
+            return;
         } else {
              navigate("/reviews/create", {
             state: { movieDetails, user}
@@ -156,6 +157,7 @@ function InteractionsCard({ movieDetails }) {
         if(!userId) {
             alert("You must be logged in to visit your journal");
             navigate('/login');
+            return;
         }
         navigate(`/reviews/user/${user.id}`, {
             state: { user }

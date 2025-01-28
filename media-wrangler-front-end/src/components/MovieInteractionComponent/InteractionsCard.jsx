@@ -5,7 +5,6 @@ import { useNavigate } from "react-router-dom";
 import AddIcon from '@mui/icons-material/Add';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import { useAuth } from '../../Services/AuthContext';
-import AddToListMenu from "../InteractiveSoloComponents/AddToListButton";
 import { submitMovieLike, removeMovieLike, checkIfUserLikedMovie, fetchLikeCount } from '../../Services/MovieLikeService';
 import { submitMovieRating, updateMovieRating, checkIfUserRatedMovie, fetchMovieRating } from '../../Services/RatingService';
 import Rating from '@mui/material/Rating';
@@ -19,21 +18,23 @@ function InteractionsCard({ movieDetails }) {
     const [isLiked, setLiked] = useState(false);
     const [likeCount, setLikeCount] = useState(0);
     const [isRated, setRated] = useState(false);
-    const [error, setError] = useState("");
-    
+
     const { user } = useAuth();
     const navigate = useNavigate();
 
     const movieId = movieDetails.id;
-    const userId = user.id;
+    const userId = user ? user.id : null;
+
 
 
     useEffect(() => {
-        async function checkLikeStatus() {
-            const liked = await checkIfUserLikedMovie(movieId, userId);
-            setLiked(liked);
-        };
-        checkLikeStatus();
+        if (userId) {
+            async function checkLikeStatus() {
+                const liked = await checkIfUserLikedMovie(movieId, userId);
+                setLiked(liked);
+            };
+            checkLikeStatus();
+        }
     }, [movieId, userId]);
 
 
@@ -46,35 +47,33 @@ function InteractionsCard({ movieDetails }) {
     }, [movieId]);
 
 
-      useEffect(() => {
+    useEffect(() => {
+        if (userId) {
         async function checkRatedStatus() {
-          try {
-            const ratedStatus = await checkIfUserRatedMovie(movieId, userId);
-            setRated(ratedStatus);
-    
-            if (ratedStatus) {
-              const userRating = await fetchMovieRating(movieId, userId);
-              if (userRating) {
+            const rated = await checkIfUserRatedMovie(movieId, userId);
+            setRated(rated);
+
+            if (isRated) {
+                const userRating = await fetchMovieRating(movieId);
                 setRating(userRating.rating);
-                console.log("User rating now set to :", userRating);
-                console.log("extract rating value from rating: ", userRating.rating);
-              
-               
-              } else {
-                setError("Could not fetch the rating.");
-              }
+                console.log("user rating : ", userRating);
+            } else {
+                console.log("User rating not found");
             }
-          } catch (error) {
-            console.error("Error checking rating status:", error);
-            setError("Error fetching rating status.");
-          }
-        }
-    
+
+        };
         checkRatedStatus();
-      }, [movieId, userId]);
+    }
+    }, [movieId, userId, isRated]);
 
 
     async function handleRatingChange(e) {
+        if (!userId) {
+            alert("You must be logged in to rate movies.");
+            navigate("/login");
+            return;
+        }
+
         const newRating = parseFloat(e.target.value);
         setRating(newRating);
 
@@ -105,6 +104,10 @@ function InteractionsCard({ movieDetails }) {
 
 
     async function handleLikeClick() {
+        if(!user) {
+            alert("You must be logged in to like a movie");
+            navigate('/login');
+        }
         setLiked(!isLiked);
         setLikeCount(likeCount + 1);
 
@@ -158,17 +161,17 @@ function InteractionsCard({ movieDetails }) {
 
         });
     }
-      
-    
+
+
     const buttons = [
         <Button key="one" className="button-container">
             <div className="button-content">
                 <span className="button-label">Rate</span>
                 <Rating
-                    name="half-rating" 
+                    name="half-rating"
                     title={ movieDetails.title }
                     value={ rating }
-                    precision={0.5} 
+                    precision={0.5}
                     onChange={ handleRatingChange }
                     sx={{
                         '& .MuiRating-iconFilled': {
@@ -184,39 +187,40 @@ function InteractionsCard({ movieDetails }) {
                 />
             </div>
         </Button>,
-        <Button 
-            key="two" 
+        <Button
+            key="two"
             className="button-container"
             name="like-button"
             title={ movieDetails.title }
-            value={ isLiked }                    
+            value={ isLiked }
             onClick={ handleLikeClick }
-        > 
+        >
             <div className="button-content">
-               <FavoriteIcon sx={{ fontSize: '40px', color: isLiked ? 'red' : 'gray', 
-          transition: 'color 0.3s',  }} /> 
+               <FavoriteIcon sx={{ fontSize: '40px', color: isLiked ? 'red' : 'gray',
+          transition: 'color 0.3s',  }} />
                <br />
-               <span className="button-label">Likes { likeCount }</span>                
+               <span className="button-label">Likes { likeCount }</span>
             </div>
         </Button>,
-        <Button 
-            key="three" 
+        <Button
+            key="three"
             className="button-container"
             name="write-review"
             title={ movieDetails.title }
-            onClick={ handleWriteReviewClick } 
+            onClick={ handleWriteReviewClick }
         >
             <div className="button-content">
-                <span className="button-label">Write Review</span>   
+                <span className="button-label">Write Review</span>
             </div>
             </Button>,
             <Button key="four" className="button-container">
-            <div className="button-content">
-                <AddToListMenu movieId={movieDetails.id} />
-            </div>
-        </Button>,
-            <Button 
-                key="five" 
+                <div className="button-content">
+                    <span className="button-label"> Add to Lists </span>
+                    <AddIcon />
+                </div>
+            </Button>,
+            <Button
+                key="five"
                 className="button-container"
                 name="route-to-journal"
                 onClick={ handleJournalClick }
@@ -226,24 +230,24 @@ function InteractionsCard({ movieDetails }) {
                 </div>
             </Button>
     ];
-    
+
     return (
       <div >
-        <Box 
+        <Box
         sx={{
             display: 'flex',
             '& > *': {
             m: 1,
             },
         }}
-        >      
+        >
             <ButtonGroup
                 orientation="vertical"
                 aria-label="Vertical button group"
                 sx={{
-                    backgroundColor: "rgba(19, 19, 20, 0.81)",  
-                    borderRadius: '8px',   
-                    border: "3px solid rgba(17, 144, 213, 0.93)"      
+                    backgroundColor: "rgba(19, 19, 20, 0.81)",
+                    borderRadius: '14px',
+                    border: "3px solid rgba(5, 70, 105, 0.93)"
                 }}
             >
                 {buttons}

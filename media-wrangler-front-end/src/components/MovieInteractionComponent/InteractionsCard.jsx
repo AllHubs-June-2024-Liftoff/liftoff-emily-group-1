@@ -141,9 +141,10 @@ function InteractionsCard({ movieDetails }) {
 
 
     function handleWriteReviewClick() {
-        if(!user) {
+        if(!userId) {
             alert("You must be logged in to write a review");
             navigate('/login');
+            return;
         }
         navigate("/reviews/create", {
             state: { movieDetails, user}
@@ -152,9 +153,10 @@ function InteractionsCard({ movieDetails }) {
 
 
     function handleJournalClick() {
-        if(!user) {
+        if(!userId) {
             alert("You must be logged in to visit your journal");
             navigate('/login');
+            return;
         }
         navigate(`/reviews/user/${user.id}`, {
             state: { user }

@@ -142,7 +142,8 @@ function InteractionsCard({ movieDetails }) {
 
     function handleWriteReviewClick() {
         if(!user) {
-            alert("You must be logged in to like a movie");
+            // alert("You must be logged in to like a movie");
+            
             navigate('/login');
         } else {
              navigate("/reviews/create", {

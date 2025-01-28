@@ -142,17 +142,17 @@ function InteractionsCard({ movieDetails }) {
 
     function handleWriteReviewClick() {
         if(!user) {
-            alert("You must be logged in to write a review");
+            alert("You must be logged in to like a movie");
             navigate('/login');
-        }
-        navigate("/reviews/create", {
+        } else {
+             navigate("/reviews/create", {
             state: { movieDetails, user}
         });
-    }
+    }}
 
 
     function handleJournalClick() {
-        if(!user) {
+        if(!userId) {
             alert("You must be logged in to visit your journal");
             navigate('/login');
         }
@@ -256,6 +256,7 @@ function InteractionsCard({ movieDetails }) {
     </div>
   );
 }
+
 
 export default InteractionsCard;
 

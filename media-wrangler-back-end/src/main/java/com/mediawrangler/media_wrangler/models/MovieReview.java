@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 
 @Entity
@@ -30,7 +31,7 @@ public class MovieReview {
     @NotNull(message = "You must enter a date watched")
     private LocalDate dateWatched;
 
-//    Might want to change the max to higher than 1000
+    //Might want to change the max to higher than 1000
     @NotBlank(message = "We want to hear your thoughts, write your movie review")
     @Size(max = 1000, message = "Review must be less than 1000 characters")
     private String review;
@@ -40,20 +41,20 @@ public class MovieReview {
 
     private String award;
 
+    private String watchAgain;
+
+    private List<String> tags = new ArrayList<>();
+
     @NotNull(message = "You must give movie a star rating")
     @ManyToOne
     @JoinColumn(name = "rating_id", referencedColumnName = "id", nullable = false)
     private Rating rating;
 
-    private String watchAgain;
-
-    private List<String> tags = new ArrayList<>();
-
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
     private User user;
 
-    //To track the movie until movie data gets sent to database from API
+    //To track the movie until the movie data updates (store or call API)
     private String title;
     private String fullPosterURL;
     private String yearReleased;
@@ -61,19 +62,12 @@ public class MovieReview {
     private Long movieId;
 
 
-//TODO: uncomment when ready to test relationships
-//    @ManyToOne
-//    private List<Comment> comments;
-
-
-
-
     public MovieReview() {
     }
 
 
     public MovieReview(String review, LocalDate dateWatched, boolean isSpoiler, String award, Rating rating,
-                       String watchAgain, String title, String fullPosterURL, String yearReleased, User user, Long movieId ) {
+                       String watchAgain, String title, String fullPosterURL, String yearReleased, User user, Long movieId) {
         this.dateCreated = LocalDate.now();
         this.review = review;
         this.dateWatched = dateWatched;
@@ -157,7 +151,6 @@ public class MovieReview {
     }
 
 
-
     //* All the movie details here...
     public String getTitle() {
         return title;
@@ -182,6 +175,7 @@ public class MovieReview {
     public void setYearReleased(String yearReleased) {
         this.yearReleased = yearReleased;
     }
+
     public Long getMovieId() {
         return movieId;
     }
@@ -189,7 +183,6 @@ public class MovieReview {
     public void setMovieId(Long movieId) {
         this.movieId = movieId;
     }
-
 
 
     //* User getter/setter here...
@@ -202,15 +195,39 @@ public class MovieReview {
     }
 
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        MovieReview that = (MovieReview) o;
+        return Objects.equals(id, that.id);
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
+    }
 
-
-
-    //TODO: Add equals, hashcode, and toString methods later
-    //TODO: Get the LocalDate to initialize during MovieReview object instantiation
-    //TODO: The checked box isn't registering correctly. I tried a boolean and String. Think I am setting it up wrong in form too
+    @Override
+    public String toString() {
+        return "MovieReview{" +
+                "id=" + id +
+                ", dateCreated=" + dateCreated +
+                ", dateWatched=" + dateWatched +
+                ", review='" + review + '\'' +
+                ", isSpoiler=" + isSpoiler +
+                ", award='" + award + '\'' +
+                ", rating=" + rating +
+                ", watchAgain='" + watchAgain + '\'' +
+                ", tags=" + tags +
+                ", user=" + user +
+                ", title='" + title + '\'' +
+                ", fullPosterURL='" + fullPosterURL + '\'' +
+                ", yearReleased='" + yearReleased + '\'' +
+                ", movieId=" + movieId +
+                '}';
+    }
 }
-
 
 
 

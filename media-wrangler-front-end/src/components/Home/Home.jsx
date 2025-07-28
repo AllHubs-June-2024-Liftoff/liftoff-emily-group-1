@@ -1,22 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./HomePage.css";
-import StarIcon from "@mui/icons-material/Star";
-import GradeIcon from "@mui/icons-material/Grade";
 import { useAuth } from "../../Services/AuthContext";
 import { useListContext } from "../../Services/ListContext.jsx";
-import { getPopularMovies } from "../../Services/HomePageService.js"
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
-import TextField from "@mui/material/TextField";
-import Button from "@mui/material/Button";
-import Box from "@mui/material/Box";
+import MovieCarousel from "../MovieCarousel/MovieCarousel";
+import { useFetchMovies } from "../../Services/useFetchMovies";
+import MovieListMenu from "../MovieListMenu";
 
 const HomePage = () => {
   const navigate = useNavigate();
-  const [upcomingMovies, setUpcomingMovies] = useState([]);
-  const [popularMovies, setPopularMovies] = useState([]);
-  const [error, setError] = useState(null);
+  const { upcomingMovies, popularMovies, error } = useFetchMovies();
   const { user } = useAuth();
   const userId = user?.id;
   const { lists, setLists } = useListContext();
@@ -25,46 +18,10 @@ const HomePage = () => {
   const [selectedMovie, setSelectedMovie] = useState(null);
   const [showAddListForm, setShowAddListForm] = useState(false);
   const [hoveredId, setHoveredId] = useState(null);
+  const [upcomingVisibleCount, setUpcomingVisibleCount] = useState(5);
+  const [popularVisibleCount, setPopularVisibleCount] = useState(5);
 
-  useEffect(() => {
-    const fetchUpcomingMovies = async (type, setState) => {
-      try {
-        const apiKey = "1ae7a70b471c9eb7d389671747750ad0";
-        const response = await fetch(
-          `https://api.themoviedb.org/3/movie/${type}?api_key=${apiKey}&language=en-US&page=1`
-        );
 
-        if (!response.ok) {
-          throw new Error(`Failed to fetch ${type} movies.`);
-        }
-
-        const data = await response.json();
-        setState(data.results);
-      } catch (error) {
-        setError(error.message);
-      }
-    };
-
-    fetchUpcomingMovies("upcoming", setUpcomingMovies);
-  }, []);
-
-  
-    const fetchPopularMovies = async () => {
-      try {
-        const movies = await getPopularMovies();
-        console.log("Fetched movies", movies);
-        if (!Array.isArray(movies)) {
-            throw new Error("Invalid response format for popular movies");
-        }
-        setPopularMovies(movies)
-      } catch (err) {
-        setError(err.message || "Popular movies fetch failed");
-      }
-    };
-
-    useEffect(() => {
-        fetchPopularMovies();
-    }, [])
 
   useEffect(() => {
     const fetchLists = async () => {
@@ -150,6 +107,41 @@ const HomePage = () => {
 
     setAnchorEl(null);
   };
+
+   const handleAddMovieToEvents = async (movie) => {
+    if (!user || !user.id) {
+      alert("User is not logged in or user ID is missing.");
+      return;
+    }
+
+    const formattedStart = `${movie.release_date}T00:00:00`;
+    const formattedEnd = `${movie.release_date}T23:59:59`;
+
+    try {
+      const response = await fetch("http://localhost:8080/api/events/add", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          title: movie.title,
+          start: formattedStart,
+          end: formattedEnd,
+          userId: user.id,
+        }),
+      });
+
+      if (response.ok) {
+        alert(`"${movie.title}" has been added to your events!`);
+      } else {
+        alert("Failed to add movie to your events.");
+      }
+    } catch (error) {
+      console.error("Error adding movie to events:", error);
+      alert("An error occurred while adding the movie to your events.");
+    }
+  };
+
   return (
     <>
         <div className="home-container">
@@ -189,179 +181,54 @@ const HomePage = () => {
         </div>
 
       <div className="home-container">
-      <div className="home-movie-sections">
-  <div className="home-upcoming-container">
-    <h2 className="home-upcoming-title">Upcoming Movies</h2>
-    {error && <p>{error}</p>}
+        <div className="home-movie-sections">
+          <div className="home-movie-sections">
+            <MovieCarousel
+              title="Upcoming Movies"
+              movies={upcomingMovies.slice(0, upcomingVisibleCount)}
+              onPosterClick={handlePosterClick}
+              onAddClick={handleAddMovieToEvents} 
+              buttonType="calendar"
+            />
+            {upcomingMovies.length > upcomingVisibleCount && (
+              <div className="view-more-container">
+                <button className="view-more-button" onClick={() => navigate("/coming-soon")}>
+                  View More Upcoming Movies
+                </button>
+              </div>
+            )}
 
-    <div id="home-upcoming-movie-search">
-      {upcomingMovies.slice(0, 5).map((movie) => (
-        <div key={movie.id} className="home-upcoming-poster-container">
-          <img
-            src={`https://image.tmdb.org/t/p/w200${movie.poster_path}`}
-            alt={`Poster of ${movie.title}`}
-            className="home-upcoming-poster-image"
-            onClick={() => handlePosterClick(movie)}
-          />
-          <button
-            className="home-upcoming-add-button"
-            onClick={(event) => handleAddClick(event, movie)}
-          >
-            <StarIcon style={{ color: "white", fontSize: "20px" }} />
-          </button>
+            <MovieCarousel
+              title="Popular Movies"
+              movies={popularMovies.slice(0, popularVisibleCount)}
+              onPosterClick={handlePosterClick}
+              onAddClick={handleAddClick} 
+              buttonType="list"
+            />
+            {popularMovies.length > popularVisibleCount && (
+              <div className="view-more-container">
+                <button className="view-more-button" onClick={() => navigate("/search")}>
+                  View More Popular Movies
+                </button>
+              </div>
+            )}
+          </div>
         </div>
-      ))}
+
+
+      <MovieListMenu
+        anchorEl={anchorEl}
+        onClose={handleMenuClose}
+        lists={lists}
+        selectedMovie={selectedMovie}
+        showAddListForm={showAddListForm}
+        setShowAddListForm={setShowAddListForm}
+        newListName={newListName}
+        setNewListName={setNewListName}
+        onAddList={handleAddList}
+        onSelectList={handleSelectList}
+      />
     </div>
-    <button className="home-view-more-button" onClick={() => navigate("/coming-soon")}>
-      View More
-    </button>
-  </div>
-
-  <div className="home-popular-container">
-    <h2 className="home-popular-title">Popular Movies</h2>
-    {error && <p>{error}</p>}
-
-    <div id="home-popular-movie-search">
-      {Array.isArray(popularMovies) && popularMovies.slice(0, 5).map((movie) => (
-        <div key={movie.id} className="home-popular-poster-container">
-          <img
-            src={`https://image.tmdb.org/t/p/w200${movie.posterPath}`}
-            alt={`Poster of ${movie.title}`}
-            className="home-popular-poster-image"
-            onClick={() => handlePosterClick(movie)}
-          />
-          <button
-            className="home-popular-add-button"
-            onClick={(event) => handleAddClick(event, movie)}
-          >
-            <StarIcon style={{ color: "white", fontSize: "20px" }} />
-          </button>
-        </div>
-      ))}
-    </div>
-    <button className="home-view-more-button" onClick={() => navigate("/search")}>
-      Search More
-    </button>
-  </div>
-</div>
-
-
-      {anchorEl && (
-       <Menu
-       anchorEl={anchorEl}
-       open={Boolean(anchorEl)}
-       onClose={handleMenuClose}
-       PaperProps={{
-         style: {
-           padding: "16px",
-           borderRadius: "8px",
-           backgroundColor: "#f4e1d2",
-           boxShadow: "none",
-           border: "none",
-         },
-       }}
-     >
-       <MenuItem
-         onClick={() => handleSelectList("Favorites")}
-         sx={{
-           fontWeight: "bold",
-           borderRadius: "4px",
-           color: "#9e5231",
-           "&:hover": {
-             backgroundColor: "#f6d8c3",
-           },
-           display: "flex",
-           alignItems: "center",
-           gap: "8px",
-         }}
-       >
-          <GradeIcon sx={{ color: "#9e5231" }} /> Favorites
-        </MenuItem>
-
-       {lists.map((listName, index) => (
-        <MenuItem
-        key={index}
-        onClick={() => handleSelectList(listName)}
-        sx={{
-          fontWeight: "bold",
-          borderRadius: "4px",
-          color: "#9e5231",
-          "&:hover": {
-            backgroundColor: "#f6d8c3",
-          },
-          display: "flex",
-          alignItems: "center",
-          gap: "8px",
-        }}
-        >
-          <GradeIcon sx={{ color: "#9e5231" }} /> {listName}
-        </MenuItem>
-        ))}
-
-       {!showAddListForm && (
-         <MenuItem
-           onClick={() => setShowAddListForm(true)}
-           sx={{
-             fontWeight: "bold",
-             borderRadius: "4px",
-             color: "#9e5231",
-             "&:hover": {
-               backgroundColor: "#f6d8c3",
-             },
-           }}
-         >
-           + Add List
-         </MenuItem>
-       )}
-
-       {showAddListForm && (
-         <Box
-           sx={{
-             display: "flex",
-             flexDirection: "column",
-             gap: "8px",
-             alignItems: "center",
-             padding: "8px",
-             backgroundColor: "#f4e1d2",
-             borderRadius: "8px",
-           }}
-         >
-           <TextField
-             label="New List Name"
-             variant="outlined"
-             size="small"
-             value={newListName}
-             onChange={(e) => setNewListName(e.target.value)}
-             sx={{
-               width: "200px",
-               "& .MuiOutlinedInput-root": {
-                 borderRadius: "16px",
-               },
-             }}
-           />
-           <Button
-             variant="contained"
-             size="small"
-             onClick={handleAddList}
-             sx={{
-               backgroundColor: "#9e5231",
-               color: "white",
-               "&:hover": {
-                 backgroundColor: "#b8643f",
-                 opacity: 0.9,
-               },
-               borderRadius: "8px",
-               textTransform: "capitalize",
-             }}
-           >
-             Add List
-           </Button>
-         </Box>
-       )}
-     </Menu>
-      )}
-    </div>
-
 
       <footer className="footer">
         <p>This product uses the TMDB API but is not endorsed or certified by TMDB.</p>

@@ -51,34 +51,39 @@ function Search() {
 
     return (
         <>
-        <div className='search-container'>
-            <h1 className='search-title'>Search for Movies</h1>
+        <div className="search-container">
+            <div className="search-hero-section">
+                <div className="search-hero-overlay">
+                    <h1 className="search-welcome-title">Search For Movies</h1>
+                    <div className="search-button-container">
+                        <button 
+                            onClick={() => setSearchType('title')} 
+                            className={`search-title-button ${searchType === 'title' ? 'selected' : ''}`}
+                        >
+                            Search by Title
+                        </button>
+                        <button 
+                            onClick={() => setSearchType('person')} 
+                            className={`search-title-button ${searchType === 'person' ? 'selected' : ''}`}
+                        >
+                            Search by Person
+                        </button>
+                    </div>
 
-            <div className="search-button-container">
-                <button 
-                    onClick={() => setSearchType('title')} 
-                    className={`search-title-button ${searchType === 'title' ? 'selected' : ''}`}
-                >
-                    Search by Title
-                </button>
-                <button 
-                    onClick={() => setSearchType('person')} 
-                    className={`search-title-button ${searchType === 'person' ? 'selected' : ''}`}
-                >
-                    Search by Person
-                </button>
+                    <input
+                        type="text"
+                        value={movieSearch}
+                        onChange={(e) => setMovieSearch(e.target.value)}
+                        placeholder="Enter movie title"
+                        onKeyDown={handleKeyDown}
+                        className='search-input'
+                    />
+                    <button className='search-button' onClick={handleSearch}>Search</button>
+                </div>
             </div>
+        </div>
 
-            <input
-                type="text"
-                value={movieSearch}
-                onChange={(e) => setMovieSearch(e.target.value)}
-                placeholder="Enter movie title"
-                onKeyDown={handleKeyDown}
-                className='search-input'
-            />
-            <button className='search-button' onClick={handleSearch}>Search</button>
-
+        <div className='search-movie-container'>
             {error && <p>{error}</p>}
 
             {movieData.length > 0 ? (

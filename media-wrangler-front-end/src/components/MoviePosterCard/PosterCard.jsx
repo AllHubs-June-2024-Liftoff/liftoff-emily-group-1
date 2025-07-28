@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import './PosterCard.css'
+import './PosterCard.css';
 import { useAuth } from "../../Services/AuthContext";
 import { useListContext } from "../../Services/ListContext.jsx";
 import fallbackImage from "../../../Resources/default-fallback-image.jpg";
@@ -13,10 +13,21 @@ import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import { useNavigate } from 'react-router-dom';
 
+const menuItemStyles = {
+  fontWeight: "bold",
+  borderRadius: "4px",
+  color: "#9e5231",
+  "&:hover": { backgroundColor: "#f6d8c3" },
+  display: "flex",
+  alignItems: "center",
+  gap: "8px",
+};
+
 function MovieCard({ movie }) {
   const { user } = useAuth();
-  const userId = user?.id; 
+  const userId = user?.id;
   const { lists, setLists } = useListContext();
+
   const [newListName, setNewListName] = useState("");
   const [anchorEl, setAnchorEl] = useState(null);
   const [showAddListForm, setShowAddListForm] = useState(false);
@@ -25,142 +36,87 @@ function MovieCard({ movie }) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchLists = async () => {
-      try {
-        const response = await fetch(`http://localhost:8080/api/lists/user-lists?userId=${userId}`);
-        if (response.ok) {
-          const data = await response.json();
-          setLists(data);
-        } else {
-          console.error("Failed to fetch lists.");
-        }
-      } catch (error) {
-        console.error("Error fetching lists:", error);
-      }
-    };
-  
-    if (userId) {
-      fetchLists();
-    }
+    if (!userId) return;
+    fetch(`http://localhost:8080/api/lists/user-lists?userId=${userId}`)
+      .then(res => res.ok ? res.json() : Promise.reject("Failed to fetch"))
+      .then(setLists)
+      .catch(err => console.error("Error fetching lists:", err));
   }, [userId]);
 
-  const handleMouseOver = (id) => {
-    setHoveredId(id);
-  };
-
-  const handleMouseOut = () => {
-    setHoveredId(null);
-  };
-
-  const handlePosterClick = () => {
-    navigate(`/movies/${movie.id}`);
-  };
-
-  const handleAddClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-    setShowAddListForm(false);
-  };
-
-  const handleAddList = async () => {
-    if (newListName.trim() && !lists.includes(newListName)) {
-      const payload = {
-        userId,
-        listName: newListName,
-      };
-  
-      try {
-        const response = await fetch("http://localhost:8080/api/lists/add", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        });
-  
-        if (response.ok) {
-          setLists((prevLists) => {
-            if (!prevLists.includes(newListName)) {
-              return [...prevLists, newListName];
-            }
-            return prevLists;
-          });
-          setNewListName(""); 
-          setShowAddListForm(false); 
-          alert(`List "${newListName}" added!`);
-        } else {
-          alert("Failed to add list.");
-        }
-      } catch (error) {
-        console.error("Error adding list:", error);
-      }
-    } else if (lists.includes(newListName)) {
-      alert(`The list "${newListName}" already exists.`);
-    }
-  };
-  
-  
-  const handleSelectList = (listName) => {
-    const payload = {
-      listName,
-      movieId: movie.id,
-      userId,
-    };
-
-    fetch("http://localhost:8080/api/lists/add-movie", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-    })
-      .then((response) => {
-        if (response.ok) {
-          alert(`Movie added to ${listName}`);
-        } else {
-          alert("Failed to add movie to the list.");
-        }
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
-
-    setAnchorEl(null);
-  };
-
+  const handlePosterClick = () => navigate(`/movies/${movie.id}`);
   const imageUrl = movie.posterPath
     ? `https://image.tmdb.org/t/p/w780${movie.posterPath}`
     : fallbackImage;
+
+  const handleAddClick = (e) => setAnchorEl(e.currentTarget);
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+    setShowAddListForm(false);
+    setNewListName("");
+  };
+
+  const handleAddList = async () => {
+    if (!newListName.trim() || lists.includes(newListName)) {
+      return alert(`List "${newListName}" already exists or is invalid.`);
+    }
+
+    try {
+      const res = await fetch("http://localhost:8080/api/lists/add", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId, listName: newListName }),
+      });
+
+      if (res.ok) {
+        setLists(prev => [...prev, newListName]);
+        handleMenuClose();
+        alert(`List "${newListName}" added!`);
+      } else {
+        alert("Failed to add list.");
+      }
+    } catch (err) {
+      console.error("Error adding list:", err);
+    }
+  };
+
+  const handleSelectList = async (listName) => {
+    try {
+      const res = await fetch("http://localhost:8080/api/lists/add-movie", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ listName, movieId: movie.id, userId }),
+      });
+
+      alert(res.ok ? `Movie added to ${listName}` : "Failed to add movie.");
+    } catch (err) {
+      console.error("Error adding movie:", err);
+    }
+    handleMenuClose();
+  };
 
   return (
     <div id="movie-search">
       <div
         key={movie.id}
         className={styles.posterContainer}
-        onMouseOver={() => handleMouseOver(movie.id)}
-        onMouseOut={handleMouseOut}
+        onMouseOver={() => setHoveredId(movie.id)}
+        onMouseOut={() => setHoveredId(null)}
       >
         <img
-         onClick={handlePosterClick}
-         title={movie.title}
-         src={imageUrl}
-         alt={movie.title}
-         className={styles.posterImage}
+          onClick={handlePosterClick}
+          title={movie.title}
+          src={imageUrl}
+          alt={movie.title}
+          className={styles.posterImage}
           style={{
-            border:
-              hoveredId === movie.id
-                ? "2px solid rgb(99, 180, 176)"
-                : "none",
+            border: hoveredId === movie.id ? "2px solid rgb(99, 180, 176)" : "none",
           }}
         />
         <button className={styles.addButton} onClick={handleAddClick}>
           <StarIcon style={{ color: "white", fontSize: "20px" }} />
         </button>
-        <Menu
-          anchorEl={anchorEl}
-          open={Boolean(anchorEl)}
-          onClose={handleMenuClose}
+
+        <Menu anchorEl={anchorEl} open={!!anchorEl} onClose={handleMenuClose}
           PaperProps={{
             style: {
               padding: "16px",
@@ -171,60 +127,22 @@ function MovieCard({ movie }) {
             },
           }}
         >
-          <MenuItem
-            onClick={() => handleSelectList("Favorites")}
-            sx={{
-              fontWeight: "bold",
-              borderRadius: "4px",
-              color: "#9e5231",
-              "&:hover": {
-                backgroundColor: "#f6d8c3",
-              },
-              display: "flex",
-              alignItems: "center",
-              gap: "8px",
-            }}
-          >
-            <GradeIcon sx={{ color: "#9e5231" }} /> Favorites
-          </MenuItem>
+          {/* Static Favorites */}
+          
 
-          {lists.map((listName, index) => (
-  <MenuItem
-    key={index}
-    onClick={() => handleSelectList(listName)}
-    sx={{
-      fontWeight: "bold",
-      borderRadius: "4px",
-      color: "#9e5231",
-      "&:hover": {
-        backgroundColor: "#f6d8c3",
-      },
-      display: "flex",
-      alignItems: "center",
-      gap: "8px",
-    }}
-  >
-    <GradeIcon sx={{ color: "#9e5231" }} /> {listName}
-  </MenuItem>
-))}
+          {/* User-created Lists */}
+          {lists.map((listName, idx) => (
+            <MenuItem key={idx} onClick={() => handleSelectList(listName)} sx={menuItemStyles}>
+              <GradeIcon sx={{ color: "#9e5231" }} /> {listName}
+            </MenuItem>
+          ))}
 
-          {!showAddListForm && (
-            <MenuItem
-              onClick={() => setShowAddListForm(true)}
-              sx={{
-                fontWeight: "bold",
-                borderRadius: "4px",
-                color: "#9e5231",
-                "&:hover": {
-                  backgroundColor: "#f6d8c3",
-                },
-              }}
-            >
+          {/* Add New List */}
+          {!showAddListForm ? (
+            <MenuItem onClick={() => setShowAddListForm(true)} sx={menuItemStyles}>
               + Add List
             </MenuItem>
-          )}
-
-          {showAddListForm && (
+          ) : (
             <Box
               sx={{
                 display: "flex",
@@ -275,6 +193,7 @@ function MovieCard({ movie }) {
 }
 
 export default MovieCard;
+
 
 
 /*

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import MovieCard from '../MoviePosterCard/PosterCard'; // Assuming MovieCard is correctly imported
+import MovieCard from '../MoviePosterCard/PosterCard';
 import '../../stylings/DiscoverPage.css';
 
 const DiscoverPage = () => {
@@ -98,67 +98,69 @@ const DiscoverPage = () => {
   return (
     <>
       <div className="discover-container">
-        <h1 className='dicover-title'>Discover a Movie to Watch</h1>
+        <div className="discover-hero-section">
+          <div className="discover-hero-overlay">
+            <h1 className="discover-welcome-title">Discover a Movie to Watch</h1> <div className="yearRange">
 
-        <div className="discover-button-group">
-          <button
-            className="button andor-button"
-            onClick={() => {
-              handleToggleButton();
-              handleDiscover();
-            }}
-          >
-            {andOrChar === '|' ? 'Any Movies With These Genres' : 'Movie Has Each Genre'}
-          </button>
+              <div>
+              <label className='discover-label' htmlFor="afterYear">Released After</label>
+              <input
+                type="number"
+                id="afterYear"
+                value={afterYear}
+                onChange={(e) => {
+                  setAfterYear(e.target.value);
+                  handleDiscover();
+                }}
+                placeholder="Year"
+                min={1880}
+                max={2500}
+              />
+              </div>
+
+              <div>
+              <label className='discover-label' htmlFor="beforeYear">Released Before</label>
+              <input
+                type="number"
+                id="beforeYear"
+                value={beforeYear}
+                onChange={(e) => {
+                  setBeforeYear(e.target.value);
+                  handleDiscover();
+                }}
+                placeholder="Year"
+                min={1880}
+                max={2500}
+              />
+              </div>
+            </div>
+
+            <div className='button'>
+              <button onClick={() => handleRandomButton()}>Pick me a Movie!</button>
+            </div>
+
+            {error && <div className="error">{error}</div>}
+            
+
+            <div className="discover-button-group">
+              {genres.map((genre) => (
+                <button
+                  key={genre.id}
+                  onClick={() => handleToggle(genre.id)}
+                  className={`button genre-button ${selectedGenres.includes(String(genre.id)) ? 'selected' : ''}`}
+                >
+                  {genre.name}
+                </button>
+              ))}
+            </div>
+
+           
+
+          </div>
         </div>
+      </div>
 
-        <div className="discover-button-group">
-          {genres.map((genre) => (
-            <button
-              key={genre.id}
-              onClick={() => handleToggle(genre.id)}
-              className={`button genre-button ${selectedGenres.includes(String(genre.id)) ? 'selected' : ''}`}
-            >
-              {genre.name}
-            </button>
-          ))}
-        </div>
-
-        <div className="yearRange">
-          <label className='discover-label' htmlFor="afterYear">Released After</label>
-          <input
-            type="number"
-            id="afterYear"
-            value={afterYear}
-            onChange={(e) => {
-              setAfterYear(e.target.value);
-              handleDiscover();
-            }}
-            placeholder="Year"
-            min={1880}
-            max={2500}
-          />
-          <label className='discover-label' htmlFor="beforeYear">Released Before</label>
-          <input
-            type="number"
-            id="beforeYear"
-            value={beforeYear}
-            onChange={(e) => {
-              setBeforeYear(e.target.value);
-              handleDiscover();
-            }}
-            placeholder="Year"
-            min={1880}
-            max={2500}
-          />
-        </div>
-
-        <div className='button'>
-          <button onClick={() => handleRandomButton()}>Pick me a Movie!</button>
-        </div>
-
-        {error && <div className="error">{error}</div>}
-
+      <div>
         <div id="discovered-movies">
           {movieData.map((movie) => (
             <MovieCard key={movie.id} movie={movie} />

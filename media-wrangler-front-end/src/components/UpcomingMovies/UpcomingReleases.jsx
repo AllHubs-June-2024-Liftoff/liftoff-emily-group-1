@@ -66,8 +66,17 @@ function AddEventForm() {
 
   return (
     <>
+
     <div className="upcoming-container">
-      <h2 className="upcoming-title">Upcoming Movies</h2>
+            <div className="upcoming-hero-section">
+                <div className="upcoming-hero-overlay">
+                    <h1 className="upcoming-welcome-title">Upcoming Movies</h1>
+                </div>
+            </div>
+        </div>
+
+    <div className="upcoming-movie-container">
+      
       {error && <p>{error}</p>}
 
       <div id="upcoming-movie-search">

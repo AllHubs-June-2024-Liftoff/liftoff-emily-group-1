@@ -1,5 +1,5 @@
-.search-container {
-    background-image: url('purple.jpg'); 
+.search-movie-container {
+
     background-size: cover;
     min-height: 100vh;
 }
@@ -20,6 +20,8 @@
     border-radius: 10px;
     padding: 5px;
     justify-content: center;
+    background-color: 	#E6E6FA;
+    color: rgb(98, 0, 25);
 }
 
 
@@ -35,7 +37,8 @@
 
 
 .search-title-button.selected {
-    background-color: lightblue;
+    background-color: rgb(98, 0, 25);
+    color:	#E6E6FA;
 }
 
 
@@ -43,7 +46,7 @@
     padding: 10px 20px;
     border: none;
     border-radius: 25px;
-    background-color: #4CAF50;
+    background-color: rgb(98, 0, 25);
     color: white;
     font-size: 18px;
     cursor: pointer;
@@ -82,4 +85,48 @@
     border-radius: 5px;           
     cursor: pointer;             
     margin-bottom: 20px;          
+}
+
+
+.search-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.search-hero-section {
+  position: relative;
+  width: 100%;
+  height: 35vh;
+  background-image: url("/purple.jpg");
+  background-size: cover;
+  background-position: center;
+}
+
+.search-hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.15); 
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 20px;
+}
+
+
+
+
+
+.search-welcome-title {
+  color: black;
+  font-size: 3rem;
+  font-weight: bold;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 
+               0 0 20px rgba(255, 255, 255, 0.6), 
+               0 0 30px rgba(255, 255, 255, 0.4);
 }

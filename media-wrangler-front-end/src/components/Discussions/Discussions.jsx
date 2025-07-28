@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import "./Discussions.css";
 
 const Discussions = () => {
+  const [user, setUser] = useState(null);
   const [questions, setQuestions] = useState([]);
   const [filteredQuestions, setFilteredQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -11,7 +12,11 @@ const Discussions = () => {
   const [searchTerm, setSearchTerm] = useState(""); 
 
   const navigate = useNavigate();
-  const user = { id: 1 };
+
+  useEffect(() => {
+    const storedUser = JSON.parse(localStorage.getItem("user"));
+    setUser(storedUser);
+  }, []);
 
   useEffect(() => {
     fetchQuestions();

@@ -1,5 +1,5 @@
 .discover-page-background {
-    background-image: url('/cactusdesert.jpg');
+
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -9,16 +9,13 @@
     transition: height 0.3s ease;
   }
 
-  .discover-container {
-    background-image: url('/cactusdesert.jpg');
-    background-size: cover;
-    min-height: 100vh;
-  }
+
   
   /* Title styling */
   .discover-title {
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 20px;    
+    
   }
   
   /* Styling for the button group */
@@ -62,7 +59,7 @@
   }
   
   .discover-label {
-    color: #B4886B;
+    color: black;
     font-weight: bold;
     display: block;  
   }
@@ -78,7 +75,7 @@
   
   /* Specific styles for the toggle button */
   .andor-button {
-    background-color: rgb(207, 145, 30);
+    background-color: rgb(98, 0, 25); 
     
   }
   
@@ -91,5 +88,55 @@
   }
 
   .yearRange {
-    padding-left: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    color: black;
   }
+
+
+
+
+  .discover-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.discover-hero-section {
+  position: relative;
+  width: 100%;
+  height: 50vh;
+  background-image: url("/BackgroundPink.jpg");
+  background-size: cover;
+  background-position: center;
+}
+
+.discover-hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.15); 
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 20px;
+}
+
+
+
+
+
+.discover-welcome-title {
+  color: black;
+  font-size: 3rem;
+  font-weight: bold;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 
+               0 0 20px rgba(255, 255, 255, 0.6), 
+               0 0 30px rgba(255, 255, 255, 0.4);
+}

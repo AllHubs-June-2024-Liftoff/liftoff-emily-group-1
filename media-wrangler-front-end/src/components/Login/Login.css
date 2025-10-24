@@ -1,5 +1,6 @@
 .login-background {
-    background-image: url('movie reel.jpg'); 
+    background-image: url('Media Wrangler Background.jpg'); 
+    background-size: cover;
     padding: 0;
     min-height: 100vh;
     display: flex;

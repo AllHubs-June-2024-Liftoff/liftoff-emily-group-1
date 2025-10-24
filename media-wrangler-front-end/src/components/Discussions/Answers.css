@@ -9,7 +9,13 @@
     justify-content: center;
     align-items: flex-start;
     font-family: "Arial", sans-serif;
+    color: black;
 }
+
+.answers strong {
+  color: black !important;
+}
+
 
 .answer-box {
     max-width: 800px;
@@ -23,7 +29,7 @@
   .answer-title {
     font-size: 1.5rem;
     font-weight: bold;
-    color: #333;
+    color: black;
     margin-bottom: 15px;
     text-align: center;
   }
@@ -37,6 +43,7 @@
     font-size: 16px;
     font-family: inherit;
     resize: none;
+    color: black;
   }
   
   .answer-textarea:focus {
@@ -62,12 +69,13 @@
   
   .mt-5 {
     margin-top: 30px;
+    color: black;
   }
   
   .title.is-5 {
     font-size: 1.3rem;
     font-weight: bold;
-    color: #333;
+    color: black;
     margin-bottom: 15px;
   }
   
@@ -77,6 +85,8 @@
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     border: 1px solid #ddd;
     transition: box-shadow 0.3s ease;
+    color: black;
+    background-color: rgba(255, 255, 255, 0.9); 
 }
   
   .answer-list {
@@ -86,7 +96,7 @@
     gap: 15px;
     display: flex;
     flex-direction: column;
-    
+    color: black;
 }
   
   .mt-4 {
@@ -96,4 +106,3 @@
   .mt-3 {
     margin-top: 15px;
   }
-  

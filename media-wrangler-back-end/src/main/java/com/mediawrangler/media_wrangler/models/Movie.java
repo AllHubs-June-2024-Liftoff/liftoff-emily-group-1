@@ -12,6 +12,7 @@ public class Movie {
     private String posterPath;
     private ArrayList<CastMember> cast;
     private ArrayList<CrewMember> crew;
+    private ArrayList<String> genreList;
 
     private List<String> buyProviders;
     private List<String> flatrateProviders;
@@ -24,7 +25,7 @@ public class Movie {
     }
 
     public Movie(int id, String title, String releaseDate, double rating, String overview,
-                 String posterPath, ArrayList<CastMember> cast, ArrayList<CrewMember> crew) {
+                 String posterPath, ArrayList<CastMember> cast, ArrayList<CrewMember> crew, ArrayList<String> genres) {
         this.id = id;
         this.title = title;
         this.releaseDate = releaseDate;
@@ -36,6 +37,7 @@ public class Movie {
         this.buyProviders = new ArrayList<>();
         this.flatrateProviders = new ArrayList<>();
         this.rentProviders = new ArrayList<>();
+        this.genreList = genres;
     }
 
     public int getId() {
@@ -100,6 +102,14 @@ public class Movie {
 
     public void setCrew(ArrayList<CrewMember> crew) {
         this.crew = crew;
+    }
+
+    public ArrayList<String> getGenreList() {
+        return genreList;
+    }
+
+    public void setGenreList(ArrayList<String> genreList) {
+        this.genreList = genreList;
     }
 
     @Override

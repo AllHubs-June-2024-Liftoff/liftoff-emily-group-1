@@ -11,6 +11,7 @@ import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 @Service
 public class MovieDataFetcher {
@@ -71,17 +72,18 @@ public class MovieDataFetcher {
                     // Extract the required fields for the Movie object
                     int id = movieJson.getInt("id");
                     String title = movieJson.getString("title");
-                    String releaseDate = movieJson.getString("release_date");
-                    double rating = movieJson.getDouble("vote_average");
-                    String overview = movieJson.getString("overview");
+                    String releaseDate = movieJson.optString("release_date", "");
+                    double rating = movieJson.optDouble("vote_average", 0.0);
+                    String overview = movieJson.optString("overview", "");
                     String posterPath = movieJson.optString("poster_path", null);
 
                     //cast and crew data not currently needed for search
                     ArrayList<CastMember> cast = null;
                     ArrayList<CrewMember> crew = null;
+                    ArrayList<String> genres = null;
 
 
-                    Movie movie = new Movie(id, title, releaseDate, rating, overview, posterPath, cast, crew);
+                    Movie movie = new Movie(id, title, releaseDate, rating, overview, posterPath, cast, crew, genres);
 
                     movieArrayList.add(movie);
                 }
@@ -167,12 +169,13 @@ public class MovieDataFetcher {
                     String overview = movieJson.getString("overview");
                     String posterPath = movieJson.optString("poster_path", null);
 
-                    //cast and crew data not currently needed for search
+                    //cast, crew, and genre data not currently needed for search
                     ArrayList<CastMember> cast = null;
                     ArrayList<CrewMember> crew = null;
+                    ArrayList<String> genres = null;
 
 
-                    Movie movie = new Movie(id, title, releaseDate, rating, overview, posterPath, cast, crew);
+                    Movie movie = new Movie(id, title, releaseDate, rating, overview, posterPath, cast, crew, genres);
 
                     movieArrayList.add(movie);
                 }
@@ -224,7 +227,7 @@ public class MovieDataFetcher {
 
     // fetches movie details by ID
     private static Movie fetchMovieDetails(OkHttpClient client, int movieId) {
-        String apiUrl = "https://api.themoviedb.org/3/movie/" + movieId + "?&language=en-US" + "&append_to_response=credits";
+        String apiUrl = "https://api.themoviedb.org/3/movie/" + movieId + "?&language=en-US" + "&append_to_response=credits%2C%20genres" ;
 
         Request request = new Request.Builder()
                 .url(apiUrl)
@@ -244,10 +247,12 @@ public class MovieDataFetcher {
             JSONObject jsonResponse = new JSONObject(responseBody);
             JSONArray castArray = jsonResponse.getJSONObject("credits").getJSONArray("cast");
             JSONArray crewArray = jsonResponse.getJSONObject("credits").getJSONArray("crew");
+            JSONArray genreArray = jsonResponse.getJSONArray("genres");
 
-            // cast and crew arrays
+            // cast and crew and genre arrays
             ArrayList<CastMember> castMembers = new ArrayList<>();
             ArrayList<CrewMember> crewMembers = new ArrayList<>();
+            ArrayList<String> genres = new ArrayList<>();
 
             // Extract movie data
             String title = jsonResponse.getString("title");
@@ -274,17 +279,93 @@ public class MovieDataFetcher {
                 String department = crewMemberObject.getString("department");
                 String job = crewMemberObject.getString("job");
 
-                // Add the cast member to the list
+                // Add the crew member to the list
                 crewMembers.add(new CrewMember(id, name, department, job));
             }
 
+            for (int i = 0; i < genreArray.length(); i++) {
+                JSONObject genreObject = genreArray.getJSONObject(i);
+                String name = genreObject.getString("name");
+
+                // Add the genre to the list
+                genres.add(name);
+            }
+
             // return Movie object with data
-            return new Movie(movieId, title, releaseDate, rating, overview, posterPath, castMembers, crewMembers);
+            return new Movie(movieId, title, releaseDate, rating, overview, posterPath, castMembers, crewMembers, genres);
 
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public static ArrayList<Movie> fetchDiscoverList(String genres, String afterYear, String beforeYear) {
+        OkHttpClient client = new OkHttpClient();
+        ArrayList<Movie> movieArrayList = new ArrayList<>();
+
+        String beforeYearQuery = "";
+        String afterYearQuery = "";
+
+        if (!Objects.equals(afterYear, "")) {
+            afterYearQuery = "&primary_release_date.gte=" + afterYear + "-12-31";
+        }
+
+        if (!Objects.equals(beforeYear, "")) {
+            beforeYearQuery = "&primary_release_date.lte=" + beforeYear + "-01-01";
+        }
+
+        for (int i = 1; i < 6; i++) {
+            String apiUrl = "https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en-US&page=" + i
+                    + "&sort_by=popularity.desc&with_genres=" + genres + beforeYearQuery + afterYearQuery;
+
+            Request request = new Request.Builder()
+                    .url(apiUrl)
+                    .header("Authorization", "Bearer " + API_READ_ACCESS_KEY)
+                    .build();
+
+            try (Response response = client.newCall(request).execute()) {
+                if (!response.isSuccessful()) {
+                    System.out.println("Request failed with status: " + response.code());
+                    return null;
+                }
+
+                // parse response and transform into array
+                String responseBody = response.body().string();
+                JSONObject jsonResponse = new JSONObject(responseBody);
+                JSONArray results = jsonResponse.getJSONArray("results");
+
+                // extract details for each movie
+                for (int j = 0; j < results.length(); j++) {
+                    JSONObject movieJson = results.getJSONObject(j);
+
+                    // Extract the required fields for the Movie object
+                    int id = movieJson.getInt("id");
+                    String title = movieJson.getString("title");
+                    String releaseDate = movieJson.getString("release_date");
+                    double rating = movieJson.getDouble("vote_average");
+                    String overview = movieJson.getString("overview");
+                    String posterPath = movieJson.optString("poster_path", null);
+
+                    //cast and crew data not currently needed for search
+                    ArrayList<CastMember> cast = null;
+                    ArrayList<CrewMember> crew = null;
+                    ArrayList<String> genreList = null;
+
+
+                    Movie movie = new Movie(id, title, releaseDate, rating, overview, posterPath, cast, crew, genreList);
+
+                    movieArrayList.add(movie);
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+
+
+        return movieArrayList;
     }
 
     public String fetchWatchProviders(int movieId) {
@@ -313,6 +394,60 @@ public class MovieDataFetcher {
             return null;
         }
     }
+
+    public ArrayList<Movie>  fetchPopularMovies() {
+        OkHttpClient client = new OkHttpClient();
+        ArrayList<Movie> popularMovieArrayList = new ArrayList<>();
+        System.out.println("Fetching popular movies...");
+
+        Request request = new Request.Builder()
+                .url("https://api.themoviedb.org/3/movie/popular?language=en-US&page=1")
+                .get()
+                .addHeader("accept", "application/json")
+                .addHeader("Authorization", "Bearer " + API_READ_ACCESS_KEY)
+                .build();
+
+        try (Response response = client.newCall(request).execute()) {
+            System.out.println(response.body());
+            if (!response.isSuccessful()) {
+                System.out.println("Provider Request failed with status: " + response.code());
+                return null;
+            }
+
+            String responseBody = response.body().string();
+            System.out.println("TMDb Response: " + responseBody);
+
+            JSONObject jsonResponse = new JSONObject(responseBody);
+            JSONArray results = jsonResponse.getJSONArray("results");
+
+            // extract details for each movie
+            for (int j = 0; j < results.length(); j++) {
+                JSONObject movieJson = results.getJSONObject(j);
+
+                // Extract the required fields for the Movie object
+                int id = movieJson.getInt("id");
+                String title = movieJson.getString("title");
+                String releaseDate = movieJson.getString("release_date");
+                double rating = movieJson.getDouble("vote_average");
+                String overview = movieJson.getString("overview");
+                String posterPath = movieJson.optString("poster_path", null);
+
+                //cast and crew data not currently needed for search
+                ArrayList<CastMember> cast = null;
+                ArrayList<CrewMember> crew = null;
+                ArrayList<String> genres = null;
+
+
+                Movie movie = new Movie(id, title, releaseDate, rating, overview, posterPath, cast, crew, genres);
+
+                popularMovieArrayList.add(movie);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+        System.out.println("I'm here");
+        return popularMovieArrayList;
+    }
 }
-
-

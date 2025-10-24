@@ -12,6 +12,13 @@ function Search() {
     const handleSearch = async () => {
         setMovieData([]); 
         setError(null);
+
+        const validCharacters = /^[a-zA-Z0-9\s]*$/;
+
+        if (!validCharacters.test(movieSearch)) {
+            setError('Invalid characters in search. Please use only letters, numbers, and spaces.');
+            return;
+        }
         
         try {
 
@@ -43,34 +50,40 @@ function Search() {
     };
 
     return (
-        <div>
-            <h1 className='search-title'>Search for Movies</h1>
+        <>
+        <div className="search-container">
+            <div className="search-hero-section">
+                <div className="search-hero-overlay">
+                    <h1 className="search-welcome-title">Search For Movies</h1>
+                    <div className="search-button-container">
+                        <button 
+                            onClick={() => setSearchType('title')} 
+                            className={`search-title-button ${searchType === 'title' ? 'selected' : ''}`}
+                        >
+                            Search by Title
+                        </button>
+                        <button 
+                            onClick={() => setSearchType('person')} 
+                            className={`search-title-button ${searchType === 'person' ? 'selected' : ''}`}
+                        >
+                            Search by Person
+                        </button>
+                    </div>
 
-            <div className="search-button-container">
-                <button 
-                    onClick={() => setSearchType('title')} 
-                    className={`search-title-button ${searchType === 'title' ? 'selected' : ''}`}
-                >
-                    Search by Title
-                </button>
-                <button 
-                    onClick={() => setSearchType('person')} 
-                    className={`search-title-button ${searchType === 'person' ? 'selected' : ''}`}
-                >
-                    Search by Person
-                </button>
+                    <input
+                        type="text"
+                        value={movieSearch}
+                        onChange={(e) => setMovieSearch(e.target.value)}
+                        placeholder="Enter movie title"
+                        onKeyDown={handleKeyDown}
+                        className='search-input'
+                    />
+                    <button className='search-button' onClick={handleSearch}>Search</button>
+                </div>
             </div>
+        </div>
 
-            <input
-                type="text"
-                value={movieSearch}
-                onChange={(e) => setMovieSearch(e.target.value)}
-                placeholder="Enter movie title"
-                onKeyDown={handleKeyDown}
-                className='search-input'
-            />
-            <button className='search-button' onClick={handleSearch}>Search</button>
-
+        <div className='search-movie-container'>
             {error && <p>{error}</p>}
 
             {movieData.length > 0 ? (
@@ -83,6 +96,14 @@ function Search() {
                 <p>{searchMessage}</p>
             )}
         </div>
+        <footer className="footer">
+        <p>This product uses the TMDB API but is not endorsed or certified by TMDB.</p>
+        <p>© {new Date().getFullYear()} Media Wrangler</p>
+        <div className="about-us">
+          <a href="/about-us">About PurpleTONE</a>
+        </div>
+      </footer>
+      </>
     );
 }
 

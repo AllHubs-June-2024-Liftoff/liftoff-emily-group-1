@@ -4,7 +4,7 @@ import "./HomePage.css";
 import StarIcon from "@mui/icons-material/Star";
 import GradeIcon from "@mui/icons-material/Grade";
 import { useAuth } from "../../Services/AuthContext";
-import { useListContext } from "../../Services/ListContext.jsx";
+import { useLists } from "../../Services/ListContext.jsx";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import TextField from "@mui/material/TextField";
@@ -18,7 +18,7 @@ const HomePage = () => {
   const [error, setError] = useState(null);
   const { user } = useAuth();
   const userId = user?.id;
-  const { lists, setLists } = useListContext();
+  const { lists, setLists } = useLists();
   const [newListName, setNewListName] = useState("");
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedMovie, setSelectedMovie] = useState(null);

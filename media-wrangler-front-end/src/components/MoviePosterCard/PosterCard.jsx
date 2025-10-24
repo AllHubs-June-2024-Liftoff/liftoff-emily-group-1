@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import './PosterCard.css'
 import { useAuth } from "../../Services/AuthContext";
-import { useListContext } from "../../Services/ListContext.jsx";
+import { useLists } from "../../Services/ListContext.jsx";
 import fallbackImage from "../../../Resources/default-fallback-image.jpg";
 import styles from "../../stylings/PosterCard.module.css";
 import StarIcon from "@mui/icons-material/Star";
@@ -16,7 +16,7 @@ import { useNavigate } from 'react-router-dom';
 function MovieCard({ movie }) {
   const { user } = useAuth();
   const userId = user?.id; 
-  const { lists, setLists } = useListContext();
+  const { lists, setLists } = useLists();
   const [newListName, setNewListName] = useState("");
   const [anchorEl, setAnchorEl] = useState(null);
   const [showAddListForm, setShowAddListForm] = useState(false);

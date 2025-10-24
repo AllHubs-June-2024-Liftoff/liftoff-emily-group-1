@@ -125,7 +125,7 @@ export default function LetterAvatars({ user }) {
 
         {!isEditing && (
           <>
-          <div class="profile-buttons-container">
+          <div className="profile-buttons-container">
           <Button
             variant="contained"
             className="edit-profile-button"

@@ -3,7 +3,7 @@
 
 /* Page Layout & Styling */
 .movie-details-page-background {
-  background-image: url('C:\Users\RBurk\OneDrive\Desktop\Media-Wrangler\liftoff-emily-group-1\media-wrangler-front-end\public\backgroundBlue.jpg');
+  background-image: url('/backgroundBlue.jpg');
   background-size: cover;
   background-position: center;
   padding: 10px;
@@ -40,18 +40,12 @@
   gap: 20px;
   padding: 10px;
 }
-
   
 .action-area-container {
   height: 400px !important;
   width: 100% !important;
 } */
 
-.movie-poster {
-  height: 300px !important;  /* Force the image height */
-  width: 100% !important;    /* Ensure it spans the width of the container */
-  object-fit: cover;         /* Ensure it covers the container without distortion */
-}
 
 
 /* Interactive Review Cards */
@@ -66,7 +60,7 @@
 }
 
 .avatar-username-rating-container {
-  color: rgba(5, 70, 105, 0.93); 
+  color: rgba(17, 144, 213, 0.93); 
   font-weight: bold;
   font-size: 30px;
   cursor: pointer;
@@ -77,11 +71,49 @@
 }
 
 
+/* User reviews & comments (MovieReviewListCard) */
 
+.comments-section {
+  margin: 20px;
+  color: white;
+}
 
+.movie-review-info {
+  color: white;
+}
 
+.streaming-nav-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: stretch;
+  gap: 20px;
+  margin-top: 20px;
+}
 
+.styled-card {
+  background-color: rgba(0, 0, 0, 0.7);
+  max-height: 425px;
+  overflow-y: auto;
+  border-radius: 10px;
+  padding: 15px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  color: white;
+  text-align: center;
+  flex: 1;
+}
 
+.movie-details-nav-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+@media (max-width: 768px) {
+  .streaming-nav-container {
+    flex-direction: column;
+  }
+}
   /* NOTE: This is in case we want to pull the InteractionsCard out of the MovieDetailCard */
 
   .layout {
@@ -97,6 +129,4 @@
     flex: 1; /* makes it smaller than the movieDetailCard */
     display: flex; 
     align-items: center; 
-  } 
-
-  
+  }

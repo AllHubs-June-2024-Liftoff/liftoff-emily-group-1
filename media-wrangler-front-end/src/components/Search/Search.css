@@ -1,8 +1,14 @@
+.search-container {
+    background-image: url('purple.jpg'); 
+    background-size: cover;
+    min-height: 100vh;
+}
 
 .search-title {
     text-align: center;
     font-size: 36px;
-    margin-bottom: 20px;   
+    margin-bottom: 20px; 
+    font-weight: bold;  
 }
 
 

@@ -2,38 +2,32 @@ import React from "react";
 import AwardReviewForm from './AwardReviewForm';
 import { useLocation } from "react-router-dom";
 
-
 export default function CreateReview() {
+  const location = useLocation();
+  const { movieDetails } = location.state || {};
 
-    //Use location is apart of the react-router-dom, it is going to allow us to pass the state of the movie object (the location object) to the review form
-    const location = useLocation();
+  if (!movieDetails) return null;
 
-    console.log("Location state:", location.state);
+  // Normalize TMDB fields -> camelCase
+  const {
+    id,
+    title,
+    poster_path,
+    release_date,
+  } = movieDetails;
 
-    //we are going to destructure the props from the movie object
-    const { movieDetails } = location.state || {};
-
-
-    return (
-        <>
-            <div className= "create-review-background">
-                
-                { movieDetails && (
-                    <AwardReviewForm 
-                        movieId={ movieDetails.id } 
-                        title={ movieDetails.title } 
-                        posterPath={ movieDetails.posterPath }
-                        releaseDate={ movieDetails.releaseDate }
-                        
-                    />
-                )}
-            </div>
-        </>
-
-
-        
-    );
+  return (
+    <div className="create-review-background">
+      <AwardReviewForm
+        movieId={id}                      // stays the same
+        title={title}
+        posterPath={poster_path}          // <-- fix: use poster_path
+        releaseDate={release_date}        // <-- fix: use release_date
+      />
+    </div>
+  );
 }
+
 
 //TODO: check if the release date in demo data is correct. Could cause testing issues if I am send the wrong data type back to Spring Boot
 

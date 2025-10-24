@@ -65,8 +65,18 @@ function AddEventForm() {
   };
 
   return (
+    <>
+
     <div className="upcoming-container">
-      <h2 className="upcoming-title">Upcoming Movies</h2>
+            <div className="upcoming-hero-section">
+                <div className="upcoming-hero-overlay">
+                    <h1 className="upcoming-welcome-title">Upcoming Movies</h1>
+                </div>
+            </div>
+        </div>
+
+    <div className="upcoming-movie-container">
+      
       {error && <p>{error}</p>}
 
       <div id="upcoming-movie-search">
@@ -93,8 +103,15 @@ function AddEventForm() {
         ))}
       </div>
     </div>
+     <footer className="footer">
+     <p>This product uses the TMDB API but is not endorsed or certified by TMDB.</p>
+     <p>© {new Date().getFullYear()} Media Wrangler</p>
+     <div className="about-us">
+       <a href="/about-us">About PurpleTONE</a>
+     </div>
+   </footer>
+   </>
   );
 }
 
 export default AddEventForm;
-

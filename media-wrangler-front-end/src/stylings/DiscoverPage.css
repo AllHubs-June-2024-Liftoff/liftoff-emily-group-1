@@ -1,0 +1,142 @@
+.discover-page-background {
+
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    width: 100vw;
+    height: 100vh;
+    padding: 20px;
+    transition: height 0.3s ease;
+  }
+
+
+  
+  /* Title styling */
+  .discover-title {
+    text-align: center;
+    margin-bottom: 20px;    
+    
+  }
+  
+  /* Styling for the button group */
+  .discover-button-group {
+    display: flex;
+    flex-wrap: wrap; 
+    justify-content: center; 
+    margin-bottom: 20px;
+  }
+  
+  /* Common button styling */
+  .button {
+    padding: 10px;
+    margin: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  
+  /* Specific styles for the genre buttons */
+  .genre-button {
+    background-color: gray;
+    width: 100%;
+    margin: 5px;
+    max-width: 150px;
+  }
+  
+  .genre-button.selected {
+    background-color: lightblue;
+  }
+
+  .button-group .genre-button {
+    flex: 1 1 auto; 
+    margin: 5px; 
+  }
+  
+  /* Specific styles for the toggle button */
+  .andor-button {
+    background-color: rgb(75, 211, 48);
+    
+  }
+  
+  .discover-label {
+    color: black;
+    font-weight: bold;
+    display: block;  
+  }
+  
+  .genre-button.selected {
+    background-color: lightblue;
+  }
+
+  .button-group .genre-button {
+    flex: 1 1 auto; 
+    margin: 5px; 
+  }
+  
+  /* Specific styles for the toggle button */
+  .andor-button {
+    background-color: rgb(98, 0, 25); 
+    
+  }
+  
+  /* Movie cards container */
+  #discovered-movies {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+  }
+
+  .yearRange {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    color: black;
+  }
+
+
+
+
+  .discover-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.discover-hero-section {
+  position: relative;
+  width: 100%;
+  height: 50vh;
+  background-image: url("/BackgroundPink.jpg");
+  background-size: cover;
+  background-position: center;
+}
+
+.discover-hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.15); 
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 20px;
+}
+
+
+
+
+
+.discover-welcome-title {
+  color: black;
+  font-size: 3rem;
+  font-weight: bold;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 
+               0 0 20px rgba(255, 255, 255, 0.6), 
+               0 0 30px rgba(255, 255, 255, 0.4);
+}

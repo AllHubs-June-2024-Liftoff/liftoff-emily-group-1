@@ -1,44 +1,27 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useRef } from "react";
 import axios from "axios";
+import { useLocation } from "react-router-dom";
 
 export default function VerifyEmail() {
-    const [message, setMessage] = useState("");
-    const navigate = useNavigate();
+  const location = useLocation();
+  const calledRef = useRef(false);
 
-    useEffect(() => {
-        let isMounted = true;
-    
-        const params = new URLSearchParams(window.location.search);
-        const token = params.get("token");
-    
-        if (token) {
-            axios
-                .get(`http://localhost:8080/users/verify?token=${token}`)
-                .then((response) => {
-                    if (isMounted) {
-                        setMessage("Email verified successfully!");
-                        setTimeout(() => navigate("/login"), 3000);
-                    }
-                })
-                .catch((error) => {
-                    if (isMounted) {
-                        setMessage("Invalid or expired token.");
-                    }
-                });
-        } else {
-            setMessage("No token provided.");
+  useEffect(() => {
+    if (calledRef.current) return;     
+    calledRef.current = true;
+
+    const params = new URLSearchParams(location.search);
+    const token = params.get("token");
+
+    if (!token) return;
+
+    axios.get(`http://localhost:8080/users/verify?token=${encodeURIComponent(token)}`)
+      .then(() => {/* show success */})
+      .catch(err => {
+        if (err?.response?.status === 404) {
         }
-    
-        return () => {
-            isMounted = false;
-        };
-    }, [navigate]);
-    
+      });
+  }, [location.search]);
 
-    return (
-        <div>
-            <h2>{message}</h2>
-        </div>
-    );
+  return null;
 }

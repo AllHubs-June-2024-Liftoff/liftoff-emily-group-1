@@ -94,39 +94,28 @@ public class UserService {
             MimeMessage mimeMessage = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
             helper.setTo(user.getEmail());
-            helper.setSubject("Verify Your Email");
+            helper.setSubject(subject);
             helper.setText(htmlContent, true);
-            helper.setFrom("no-reply@mediawrangler.com");
+
+            helper.setFrom("mediawrangler.contact@gmail.com");
+            helper.setReplyTo("no-reply@mediawrangler.com");
+
             mailSender.send(mimeMessage);
             System.out.println("Verification email sent successfully to: " + user.getEmail());
         } catch (Exception e) {
-            System.err.println("Failed to send email to: " + user.getEmail());
-            throw new RuntimeException("Failed to send verification email");
+            System.err.println("Failed to send email to: " + user.getEmail() + " -> " + e.getMessage());
         }
     }
 
     @Transactional
     public boolean verifyEmailToken(String token) {
-        User user = userRepository.findByVerificationToken(token);
-        if (user == null) {
-            System.out.println("No user found for token: " + token);
-            User alreadyVerifiedUser = userRepository.findByEmailVerifiedTrue();
-            if (alreadyVerifiedUser != null) {
-                System.out.println("Token already used, user is verified.");
-                return true;
-            }
-            return false;
+        int updated = userRepository.verifyByToken(token, LocalDateTime.now());
+        if (updated == 1) {
+            return true;
         }
-        if (user.getTokenExpirationDate().isBefore(LocalDateTime.now())) {
-            System.out.println("Token expired for user: " + user.getUsername());
-            return false;
-        }
-        System.out.println("Token is valid. Updating user...");
-        user.setEmailVerified(true);
-        user.setVerificationToken(null);
-        userRepository.save(user);
-        return true;
+        return false;
     }
+
 
 
 

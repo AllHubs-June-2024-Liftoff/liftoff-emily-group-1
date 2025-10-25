@@ -12,46 +12,59 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.OncePerRequestFilter;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.stereotype.Component;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig implements WebMvcConfigurer {
+public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf(csrf -> csrf.disable())
+        http
+                .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
-//                        .requestMatchers(HttpMethod.DELETE, "/users/profile/**").authenticated()
+
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
                         .requestMatchers(
-                                 "/",
-                                "/users/**",
-                                "/movies",
-                                "/reviews/**",
-                                "api/movies/**",
-                                "/reviews/user/**",
-                                "/reviews/view/**",
-                                "/api/movies/search",
-                                "/users/profile/**",
+                                "/",
                                 "/api/movies/**",
-                                "/users/profile/**",
+                                "/api/movies/search",
                                 "/api/lists/**",
                                 "/api/events/**",
                                 "/questions/**",
                                 "/answers/**",
+                                "/reviews/**",
+                                "/reviews/user/**",
+                                "/reviews/view/**",
                                 "/reviews/movies/**",
                                 "/api/movie-likes/**",
-                                "api/rating/**",
+                                "/api/rating/**",
                                 "/comments/**"
                         ).permitAll()
+
+                        .requestMatchers(
+                                "/users/register",
+                                "/users/login",
+                                "/users/logout",
+                                "/users/verify",
+                                "/users/check-verification",
+                                "/users/session-status"
+                        ).permitAll()
+
+                        .requestMatchers("/error", "/error/**"
+                        ).permitAll()
+
+                        .requestMatchers("/users/profile/**", "/users/info").authenticated()
+
                         .anyRequest().authenticated()
                 );
         return http.build();
@@ -59,26 +72,16 @@ public class SecurityConfig implements WebMvcConfigurer {
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.addAllowedOrigin("http://localhost:5173");
-        configuration.addAllowedMethod("*");
-        configuration.addAllowedHeader("*");
-        configuration.setAllowCredentials(true);
+        CorsConfiguration cfg = new CorsConfiguration();
+        cfg.setAllowCredentials(true);
+        cfg.setAllowedOrigins(List.of("http://localhost:5173")); // dev origin
+        cfg.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS","PATCH"));
+        cfg.setAllowedHeaders(List.of("*"));
+        cfg.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
+        source.registerCorsConfiguration("/**", cfg);
         return source;
-    }
-
-
-    @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        // manual mapping if needed
-        registry.addMapping("/**")
-                .allowedOrigins("http://localhost:5173")
-                .allowedMethods("GET", "POST", "PUT", "DELETE")
-                .allowedHeaders("*")
-                .allowCredentials(true);
     }
 
     @Bean
@@ -86,14 +89,17 @@ public class SecurityConfig implements WebMvcConfigurer {
         return new BCryptPasswordEncoder();
     }
 
-    public class DebugLoggingFilter extends OncePerRequestFilter {
+    @Component
+    public static class DebugLoggingFilter extends OncePerRequestFilter {
         @Override
-        protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+        protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
                 throws ServletException, IOException {
             System.out.println("Request URI: " + request.getRequestURI());
             System.out.println("Session ID: " + request.getRequestedSessionId());
-            filterChain.doFilter(request, response);
+            chain.doFilter(request, response);
         }
     }
 }
+
+
 

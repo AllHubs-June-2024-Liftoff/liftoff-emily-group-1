@@ -7,6 +7,7 @@ import com.mediawrangler.media_wrangler.Exception.UserNotFoundException;
 import com.mediawrangler.media_wrangler.models.User;
 import com.mediawrangler.media_wrangler.services.UserService;
 import jakarta.servlet.http.HttpSession;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -17,10 +18,11 @@ import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import com.mediawrangler.media_wrangler.data.UserRepository;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
-@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 @RestController
 @RequestMapping("/users")
 public class UserController {
@@ -83,23 +85,17 @@ public class UserController {
 
     }
 
+    @Transactional
     @GetMapping("/verify")
-    public ResponseEntity<?> verifyEmail(@RequestParam("token") String token) {
-        System.out.println("Received token: " + token);
-        try {
-            boolean isVerified = userService.verifyEmailToken(token);
-            if (isVerified) {
-                System.out.println("Token verified successfully.");
-                return new ResponseEntity<>("Email verified successfully!", HttpStatus.OK);
-            } else {
-                System.out.println("Invalid or expired token.");
-                return new ResponseEntity<>(Map.of("invalid", "Invalid or expired token"), HttpStatus.BAD_REQUEST);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ResponseEntity<>(Map.of("error", "An unexpected error occurred"), HttpStatus.INTERNAL_SERVER_ERROR);
+    public ResponseEntity<?> verify(@RequestParam String token) {
+        int updated = userRepository.verifyByToken(token, LocalDateTime.now());
+
+        if (updated == 1) {
+            return ResponseEntity.ok(Map.of("status", "verified"));
         }
+        return ResponseEntity.ok(Map.of("status", "already-verified-or-invalid"));
     }
+
 
 
     @GetMapping("/check-verification")
@@ -113,13 +109,19 @@ public class UserController {
     }
 
     @GetMapping("/info")
-    public ResponseEntity<?> loginUser( HttpSession session) {
-        System.out.println(session.getAttribute("user"));
-        int userId = (int) session.getAttribute("user");
-        User user = userRepository.getById(userId);
-
-        return new ResponseEntity<>("User: " + user.getEmail(), HttpStatus.OK);
+    public ResponseEntity<?> getInfo(HttpSession session) {
+        Object idObj = session.getAttribute("user");
+        if (idObj == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("error","No active session"));
+        }
+        int userId = (int) idObj;
+        return userRepository.findById(userId)
+                .map(u -> ResponseEntity.ok(Map.of("email", u.getEmail())))
+                .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("error","User not found")));
     }
+
 
     @GetMapping("/profile/{userId}")
     public ResponseEntity<?> getUserById(@PathVariable int userId, HttpSession session) {

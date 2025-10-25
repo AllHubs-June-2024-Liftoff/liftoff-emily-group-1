@@ -54,13 +54,13 @@ function AddEventForm() {
       });
 
       if (response.ok) {
-        alert(`"${movie.title}" has been added to your events!`);
+        alert(`"${movie.title}" has been added to your Calendar!`);
       } else {
-        alert("Failed to add movie to your events.");
+        alert("Failed to add movie to your Calendar.");
       }
     } catch (error) {
-      console.error("Error adding movie to events:", error);
-      alert("An error occurred while adding the movie to your events.");
+      console.error("Error adding movie to Calendar:", error);
+      alert("An error occurred while adding the movie to your Calendar.");
     }
   };
 

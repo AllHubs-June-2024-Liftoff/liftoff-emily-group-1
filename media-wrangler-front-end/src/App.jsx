@@ -25,12 +25,25 @@ import DiscoverPage from './components/Discover/DiscoverPage.jsx'
 import AboutUs from './components/PurpleTONE/PurpleTONE.jsx'
 import AwardReviewForm from './components/ReviewForm/AwardReviewForm.jsx'
 import EditReviewFormPage from './components/ReviewForm/EditReviewFormPage.jsx'
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
   return (
     <AuthProvider>
     <ListProvider>
       <Navbar />
+      <ToastContainer
+          position="bottom-right"
+          autoClose={2500}
+          hideProgressBar
+          newestOnTop
+          closeOnClick
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="dark"
+        />
       <div>
         <Routes>
           <Route path="/" element={<Home />} />

@@ -1,9 +1,8 @@
-import * as React from 'react';
-import Box from '@mui/material/Box';
-import Tabs from '@mui/material/Tabs';
-import Tab from '@mui/material/Tab';
-import { Link, useLocation } from 'react-router-dom';
-import { useAuth } from '../../Services/AuthContext';
+import * as React from "react";
+import { Link, useLocation } from "react-router-dom";
+import { Box, Tabs, Tab } from "@mui/material";
+import StarRateRoundedIcon from "@mui/icons-material/StarRateRounded";
+import { useAuth } from "../../Services/AuthContext";
 
 export default function Navbar() {
   const location = useLocation();
@@ -18,7 +17,7 @@ export default function Navbar() {
     ...(user
       ? [
           { label: "Profile", path: `/profile/${user.id}` },
-          { label: "Log Out", onClick: () => handleLogout() },
+          { label: "Log Out", onClick: async () => { try { await logoutAction(); } catch(e){ console.error(e);} } },
         ]
       : [
           { label: "Log In", path: "/login" },
@@ -26,83 +25,136 @@ export default function Navbar() {
         ]),
   ];
 
-  React.useEffect(() => {
-    const currentIndex = tabs.findIndex((tab) =>
-      tab.path ? tab.path === location.pathname : false
-    );
-    setValue(currentIndex >= 0 ? currentIndex : 0);
-  }, [location.pathname, user, tabs]);
+  // Robust active-tab calc (handles routes like /profile/123 and /questions/abc)
+  const computeIndex = React.useCallback(() => {
+    const pathname = location.pathname;
+    const matcher = (p) =>
+      p === "/"
+        ? pathname === "/"
+        : pathname === p || pathname.startsWith(`${p}/`);
+    const i = tabs.findIndex((t) => t.path && matcher(t.path));
+    return i >= 0 ? i : 0;
+  }, [location.pathname, tabs]);
 
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
-  };
-
-  const handleLogout = async () => {
-    try {
-      await logoutAction();
-    } catch (error) {
-      console.error("Logout error:", error);
-    }
-  };
+  React.useEffect(() => { setValue(computeIndex()); }, [computeIndex]);
 
   return (
-    <Box 
-      sx={{ 
-        display: "flex",
-        flexDirection: { xs: "column", sm: "row" },
-        alignItems: "center",
-        justifyContent: "space-between",
-        bgcolor: "background.paper",
-        padding: 2, 
+    <Box
+      sx={{
+        position: "sticky",
+        top: 0,
+        zIndex: 1200,
+        // warm “desert” gradient + subtle overlay
+        background:
+          "linear-gradient(180deg, rgba(0,0,0,.35), rgba(0,0,0,.25)), linear-gradient(90deg,#3a1f15,#9E5231,#b5643d)",
+        borderBottom: "2px solid rgba(226,168,75,.35)",
+        boxShadow: "0 6px 18px rgba(0,0,0,.35)",
+        backdropFilter: "blur(4px)",
       }}
     >
       <Box
-        component={Link}
-        to="/"
         sx={{
-          fontSize: { xs: 24, sm: 36 },
-          fontWeight: "bold",
-          fontFamily: "sans-serif",
-          textAlign: { xs: "center", sm: "left" },
-          textDecoration: "none",
-          color: "grey",
-          width: { xs: "100%", sm: "auto" },
+          maxWidth: 1200,
+          m: "0 auto",
+          px: 2,
+          height: 64,
+          display: "grid",
+          gridTemplateColumns: "auto 1fr",
+          alignItems: "center",
+          gap: { xs: 1, sm: 3 },
         }}
       >
-        Media Wrangler
-      </Box>
+        {/* Brand */}
+        <Box
+          component={Link}
+          to="/"
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: 1,
+            textDecoration: "none",
+            color: "#fff",
+          }}
+        >
+          <StarRateRoundedIcon
+            sx={{ color: "#E2A84B", filter: "drop-shadow(0 0 6px rgba(0,0,0,.6))" }}
+          />
+          <Box
+            sx={{
+              fontSize: { xs: 20, sm: 28 },
+              fontWeight: 800,
+              letterSpacing: ".3px",
+            }}
+          >
+            Media Wrangler
+          </Box>
+        </Box>
 
-      <Box
-        sx={{
-          flexGrow: 1,
-          maxWidth: "100%",
-          minWidth: 0,
-          bgcolor: "background.paper",
-          padding: 2,
-        }}
-      >
+        {/* Tabs */}
         <Tabs
           value={value}
-          onChange={handleChange}
+          onChange={(_, nv) => setValue(nv)}
           variant="scrollable"
           scrollButtons="auto"
-          TabIndicatorProps={{ style: { transition: "none" } }} 
+          TabIndicatorProps={{
+            sx: {
+              height: 4,
+              borderRadius: 2,
+              background:
+                "linear-gradient(90deg,#E2A84B,#FFD87A)",
+            },
+          }}
+          sx={{
+            justifySelf: "end",
+            "& .MuiTab-root": {
+              mx: { xs: 1, sm: 2 },
+              px: 0.5,
+              color: "rgba(255,255,255,.9)",
+              textTransform: "none",
+              fontWeight: 700,
+              letterSpacing: ".2px",
+              minHeight: 48,
+            },
+            "& .MuiTab-root.Mui-selected": {
+              color: "#fff",
+            },
+          }}
         >
-          {tabs.map((tab, index) =>
+          {tabs.map((tab, i) =>
             tab.path ? (
               <Tab
-                key={index}
+                key={tab.label}
                 label={tab.label}
                 component={Link}
                 to={tab.path}
-                sx={{ marginX: 3 }}
+                disableRipple
+                sx={{
+                  "&:hover::after": { transform: "scaleX(.5)" },
+                  position: "relative",
+                  "&::after": {
+                    content: '""',
+                    position: "absolute",
+                    left: 0,
+                    right: 0,
+                    bottom: -8,
+                    height: 4,
+                    borderRadius: 6,
+                    background:
+                      "linear-gradient(90deg,#E2A84B,#FFD87A)",
+                    transform: "scaleX(0)",
+                    transformOrigin: "left",
+                    transition: "transform .18s ease-out",
+                  },
+                }}
               />
             ) : (
               <Tab
-                key={index}
+                key={tab.label}
                 label={tab.label}
                 onClick={tab.onClick}
-                sx={{ marginX: 3, cursor: "pointer" }}
+                // keep the indicator from “sticking” to Log Out
+                disableRipple
+                sx={{ cursor: "pointer" }}
               />
             )
           )}

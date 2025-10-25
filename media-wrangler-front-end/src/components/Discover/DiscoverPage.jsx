@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import MovieCard from '../MoviePosterCard/PosterCard';
 import '../../stylings/DiscoverPage.css';
+import { toast } from "react-toastify";
+
 
 const DiscoverPage = () => {
   const genres = [
@@ -46,7 +48,7 @@ const DiscoverPage = () => {
     setSelectedGenres(updatedGenres.join(andOrChar));
   };
 
-  const handleDiscover = async () => {
+  const handleDiscover = async ({ silent = false } = {}) => {
     setMovieData([]);
     setError(null);
 
@@ -66,16 +68,26 @@ const DiscoverPage = () => {
 
       if (data.length !== 0) {
         setRandomId(data[Math.floor(Math.random() * data.length)].id);
+        if (!silent) {
+        toast.success(`Found ${data.length} match${data.length === 1 ? "" : "es"}.`);
+      }
+        } else {
+           if (!silent) {
+        toast.info("No matches for that filter yet.");
+      }
       }
     } catch (error) {
       setError(error.message);
       setMovieData([]);
+      if (!silent) {
+      toast.error("Couldn’t fetch movies. Try adjusting your filters.");
+    }
     }
   };
 
   useEffect(() => {
     if (selectedGenres) {
-      handleDiscover();
+      handleDiscover({ silent: true });
     }
   }, [selectedGenres]);
 
@@ -91,7 +103,7 @@ const DiscoverPage = () => {
     if (randomId != null) {
       navigate(`/movies/${randomId}`);
     } else {
-      alert("Pick a genre!");
+      toast.info("Pick at least one genre first.");
     };
   };
 
@@ -110,7 +122,7 @@ const DiscoverPage = () => {
                 value={afterYear}
                 onChange={(e) => {
                   setAfterYear(e.target.value);
-                  handleDiscover();
+                  handleDiscover({ silent: true });
                 }}
                 placeholder="Year"
                 min={1880}
@@ -126,7 +138,7 @@ const DiscoverPage = () => {
                 value={beforeYear}
                 onChange={(e) => {
                   setBeforeYear(e.target.value);
-                  handleDiscover();
+                  handleDiscover({ silent: true });
                 }}
                 placeholder="Year"
                 min={1880}

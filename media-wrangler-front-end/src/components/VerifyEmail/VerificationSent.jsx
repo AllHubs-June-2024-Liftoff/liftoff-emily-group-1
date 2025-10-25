@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+
 
 export default function VerificationSent() {
   return (
@@ -12,9 +12,7 @@ export default function VerificationSent() {
           Your account has been created. A verification link is ridin’ its way to your inbox.
           Click it to join the corral!
         </p>
-        <Link to="/login" style={styles.button}>
-          Saddle Up & Login
-        </Link>
+
       </div>
     </div>
   );

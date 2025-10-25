@@ -6,6 +6,8 @@ import { useListContext } from "../../Services/ListContext.jsx";
 import MovieCarousel from "../MovieCarousel/MovieCarousel";
 import { useFetchMovies } from "../../Services/useFetchMovies";
 import MovieListMenu from "../MovieListMenu";
+import { toast } from "react-toastify";
+
 
 const HomePage = () => {
   const navigate = useNavigate();
@@ -24,36 +26,36 @@ const HomePage = () => {
 
 
   useEffect(() => {
-    const fetchLists = async () => {
-      if (!userId) return;
-      try {
-        const response = await fetch(`http://localhost:8080/api/lists/user-lists?userId=${userId}`);
-        if (response.ok) {
-          const data = await response.json();
-          setLists(data);
-        } else {
-          console.error("Failed to fetch lists.");
-        }
-      } catch (error) {
-        console.error("Error fetching lists:", error);
+  const fetchLists = async () => {
+    if (!userId) return;
+    try {
+      const response = await fetch(`http://localhost:8080/api/lists/user-lists?userId=${userId}`);
+      if (response.ok) {
+        const data = await response.json();
+        setLists(data);
+      } else {
+        toast.error("Failed to fetch your lists.");
       }
-    };
-
-    fetchLists();
-  }, [userId]);
+    } catch (error) {
+      console.error("Error fetching lists:", error);
+      toast.error("Couldn’t load lists. Please try again.");
+    }
+  };
+  fetchLists();
+}, [userId]);
 
   const handlePosterClick = (movie) => {
     navigate(`/movies/${movie.id}`);
   };
 
-  const handleAddClick = (event, movie) => {
-    if (!userId) {
-      alert("You must be logged in to add movies to a list.");
-      return;
-    }
-    setAnchorEl(event.currentTarget);
-    setSelectedMovie(movie);
-  };
+ const handleAddClick = (event, movie) => {
+  if (!userId) {
+    toast.info("Log in to add movies to a list.");
+    return;
+  }
+  setAnchorEl(event.currentTarget);
+  setSelectedMovie(movie);
+};
 
   const handleMenuClose = () => {
     setAnchorEl(null);
@@ -61,68 +63,60 @@ const HomePage = () => {
   };
 
   const handleAddList = async () => {
-    if (newListName.trim() && !lists.includes(newListName)) {
-      const payload = { userId, listName: newListName };
+  if (newListName.trim() && !lists.includes(newListName)) {
+    const payload = { userId, listName: newListName };
 
-      try {
+    await toast.promise(
+      (async () => {
         const response = await fetch("http://localhost:8080/api/lists/add", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
         });
-
-        if (response.ok) {
-          setLists((prevLists) => [...prevLists, newListName]);
-          setNewListName("");
-          setShowAddListForm(false);
-          alert(`List "${newListName}" added!`);
-        } else {
-          alert("Failed to add list.");
-        }
-      } catch (error) {
-        console.error("Error adding list:", error);
-      }
-    } else if (lists.includes(newListName)) {
-      alert(`The list "${newListName}" already exists.`);
-    }
-  };
+        if (!response.ok) throw new Error("add-list-failed");
+        setLists((prev) => [...prev, newListName]);
+        setNewListName("");
+        setShowAddListForm(false);
+      })(),
+      { pending: "Creating list…", success: `List "${newListName}" added!`, error: "Failed to add list." }
+    );
+  } else if (lists.includes(newListName)) {
+    toast.warn(`The list "${newListName}" already exists.`);
+  }
+};
 
   const handleSelectList = (listName) => {
-    if (!selectedMovie) return;
-    const payload = { listName, movieId: selectedMovie.id, userId };
+  if (!selectedMovie) return;
+  const payload = { listName, movieId: selectedMovie.id, userId };
 
+  toast.promise(
     fetch("http://localhost:8080/api/lists/add-movie", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
-    })
-      .then((response) => {
-        if (response.ok) {
-          alert(`Movie added to ${listName}`);
-        } else {
-          alert("Failed to add movie to the list.");
-        }
-      })
-      .catch((error) => console.error("Error:", error));
+    }).then((res) => {
+      if (!res.ok) throw new Error("add-movie-failed");
+    }),
+    { pending: "Adding to list…", success: `Added to ${listName}.`, error: "Failed to add movie to the list." }
+  );
 
-    setAnchorEl(null);
-  };
+  setAnchorEl(null);
+};
 
    const handleAddMovieToEvents = async (movie) => {
-    if (!user || !user.id) {
-      alert("User is not logged in or user ID is missing.");
-      return;
-    }
+  if (!user?.id) {
+    toast.info("Log in to add releases to your calendar.");
+    return;
+  }
 
-    const formattedStart = `${movie.release_date}T00:00:00`;
-    const formattedEnd = `${movie.release_date}T23:59:59`;
+  const formattedStart = `${movie.release_date}T00:00:00`;
+  const formattedEnd = `${movie.release_date}T23:59:59`;
 
-    try {
+  await toast.promise(
+    (async () => {
       const response = await fetch("http://localhost:8080/api/events/add", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           title: movie.title,
           start: formattedStart,
@@ -130,17 +124,15 @@ const HomePage = () => {
           userId: user.id,
         }),
       });
-
-      if (response.ok) {
-        alert(`"${movie.title}" has been added to your events!`);
-      } else {
-        alert("Failed to add movie to your events.");
-      }
-    } catch (error) {
-      console.error("Error adding movie to events:", error);
-      alert("An error occurred while adding the movie to your events.");
+      if (!response.ok) throw new Error("add-event-failed");
+    })(),
+    {
+      pending: `Adding "${movie.title}"…`,
+      success: `"${movie.title}" added to your Calendar!`,
+      error: "Failed to add to your Calendar.",
     }
-  };
+  );
+};
 
   return (
     <>

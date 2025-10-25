@@ -30,37 +30,45 @@ function AddEventForm() {
   }, []);
 
   const handleAddMovieToEvents = async (movie) => {
-    if (!user?.id) {
-      toast.info("Please log in to add to your calendar.");
+  if (!user || !user.id) {
+    toast.info("Log in to add to your calendar.");
+    return;
+  }
+
+  const formattedStart = `${movie.release_date}T00:00:00`;
+  const formattedEnd   = `${movie.release_date}T23:59:59`;
+
+  try {
+    const res = await fetch("http://localhost:8080/api/events/add", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        title: movie.title,
+        start: formattedStart,
+        end: formattedEnd,
+        userId: user.id,
+        // NEW
+        tmdbId: movie.id,
+        posterPath: movie.poster_path || null,
+        overview: movie.overview || null,
+      }),
+    });
+
+    if (res.status === 409) {
+      toast.info("Already on your calendar for that day.");
       return;
     }
+    if (res.ok) {
+      toast.success(`"${movie.title}" added to your calendar!`);
+    } else {
+      toast.error("Failed to add movie to your calendar.");
+    }
+  } catch (e) {
+    console.error(e);
+    toast.error("Could not add to calendar.");
+  }
+};
 
-    const formattedStart = `${movie.release_date}T00:00:00`;
-    const formattedEnd = `${movie.release_date}T23:59:59`;
-
-    // Nice pending → success/error flow
-    await toast.promise(
-      (async () => {
-        const res = await fetch("http://localhost:8080/api/events/add", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            title: movie.title,
-            start: formattedStart,
-            end: formattedEnd,
-            userId: user.id,
-          }),
-        });
-        if (!res.ok) throw new Error("Request failed");
-      })(),
-      {
-        pending: `Adding "${movie.title}"…`,
-        success: `"${movie.title}" added to your calendar!`,
-        error: "Failed to add to your calendar.",
-      },
-      { toastId: `add-${movie.id}` } // prevents duplicates on fast clicks
-    );
-  };
 
   return (
     <>

@@ -3,6 +3,11 @@ package com.mediawrangler.media_wrangler.models;
 import jakarta.persistence.*;
 
 @Entity
+@Table(
+        name = "movie_list",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "list_name", "movie_id"})
+)
+
 public class MovieList {
 
     @Id

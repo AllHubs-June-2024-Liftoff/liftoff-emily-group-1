@@ -9,11 +9,17 @@ public class Event {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     private String title;
+
     private LocalDateTime start;
     private LocalDateTime end;
+
+    private Integer tmdbId;
+    private String posterPath;
+    @Column(length = 2000)
+    private String overview;
 
     @ManyToOne
     @JoinColumn(name= "user_id", nullable = false)
@@ -57,5 +63,33 @@ public class Event {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Integer getTmdbId() {
+        return tmdbId;
+    }
+
+    public void setTmdbId(Integer tmdbId) {
+        this.tmdbId = tmdbId;
+    }
+
+    public String getPosterPath() {
+        return posterPath;
+    }
+
+    public void setPosterPath(String posterPath) {
+        this.posterPath = posterPath;
+    }
+
+    public String getOverview() {
+        return overview;
+    }
+
+    public void setOverview(String overview) {
+        this.overview = overview;
     }
 }

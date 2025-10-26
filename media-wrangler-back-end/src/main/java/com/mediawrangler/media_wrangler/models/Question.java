@@ -5,31 +5,30 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
 public class Question {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull
+    @Column(nullable = false, length = 140)
     private String questionText;
 
-    private LocalDateTime timestamp;
+    @Column(length = 300)
+    private String shortDescription; // optional
 
-    @PrePersist
-    protected void onCreate() {
-        this.timestamp = LocalDateTime.now();
-    }
+    private Integer movieId;
+    private String movieTitle;
+    private String moviePosterPath;   // store raw tmdb poster_path (e.g. "/abc.jpg")
+    private LocalDate movieReleaseDate;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private User user;
 
-    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL)
-    private List<Answer> answers;
+    private LocalDateTime createdAt = LocalDateTime.now();
 
     public Long getId() {
         return id;
@@ -47,12 +46,44 @@ public class Question {
         this.questionText = questionText;
     }
 
-    public LocalDateTime getTimestamp() {
-        return timestamp;
+    public String getShortDescription() {
+        return shortDescription;
     }
 
-    public void setTimestamp(LocalDateTime timestamp) {
-        this.timestamp = timestamp;
+    public void setShortDescription(String shortDescription) {
+        this.shortDescription = shortDescription;
+    }
+
+    public Integer getMovieId() {
+        return movieId;
+    }
+
+    public void setMovieId(Integer movieId) {
+        this.movieId = movieId;
+    }
+
+    public String getMovieTitle() {
+        return movieTitle;
+    }
+
+    public void setMovieTitle(String movieTitle) {
+        this.movieTitle = movieTitle;
+    }
+
+    public String getMoviePosterPath() {
+        return moviePosterPath;
+    }
+
+    public void setMoviePosterPath(String moviePosterPath) {
+        this.moviePosterPath = moviePosterPath;
+    }
+
+    public LocalDate getMovieReleaseDate() {
+        return movieReleaseDate;
+    }
+
+    public void setMovieReleaseDate(LocalDate movieReleaseDate) {
+        this.movieReleaseDate = movieReleaseDate;
     }
 
     public User getUser() {
@@ -63,12 +94,12 @@ public class Question {
         this.user = user;
     }
 
-    public List<Answer> getAnswers() {
-        return answers;
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 
-    public void setAnswers(List<Answer> answers) {
-        this.answers = answers;
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 }
 

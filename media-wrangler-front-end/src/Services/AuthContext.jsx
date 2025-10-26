@@ -8,35 +8,47 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   
 
-  useEffect (() => {
+  useEffect(() => {
     const initializeAuth = async () => {
-      const storedUser = localStorage.getItem("user");
-    
-      if (storedUser) {
-        try {
-          const parsedUser = JSON.parse(storedUser);
-          console.log("Stored user:", parsedUser);
-          const response = await checkSession();
-          console.log("Session verification response:", response);
-    
-          if (response.status === 200) {
-            setUser(parsedUser); 
+      try {
+        const stored = localStorage.getItem("user");
+        const sessionRes = await checkSession(); 
+        if (sessionRes.status === 200 && sessionRes.data?.sessionValid) {
+          const sessionUserId = sessionRes.data.userId;
+          if (stored) {
+            const parsed = JSON.parse(stored);
+            if (parsed.id !== sessionUserId) {
+              const me = await apiClient.get(`/users/profile/${sessionUserId}`, {
+                withCredentials: true,
+              });
+              setUser(me.data);
+              localStorage.setItem("user", JSON.stringify(me.data));
+            } else {
+              setUser(parsed);
+            }
           } else {
-            console.warn("Session status check returned:", response.status);
-
+            const me = await apiClient.get(`/users/profile/${sessionUserId}`, {
+              withCredentials: true,
+            });
+            setUser(me.data);
+            localStorage.setItem("user", JSON.stringify(me.data));
           }
-        } catch (error) {
-          console.error("Session verification failed:", error.message);
-
+        } else {
+          localStorage.removeItem("user");
+          setUser(null);
         }
+      } catch (err) {
+        console.error("Session verification failed:", err.message);
+        localStorage.removeItem("user");
+        setUser(null);
+      } finally {
+        setLoading(false);
       }
-    
-      setLoading(false);
     };
-    
 
     initializeAuth();
   }, []);
+
 
   const loginAction = async (data) => {
     try {
@@ -55,17 +67,18 @@ export const AuthProvider = ({ children }) => {
   };
   
   const updateProfile = async (data) => {
-    try {
-      console.log("Updating profile with data:", data);
-      const response = await apiClient.put(`/users/profile/${data.id}`, data);
-      console.log("Profile updated successfully:", response.data);
-      setUser(response.data);
-      localStorage.setItem("user", JSON.stringify(response.data));
-    } catch (error) {
-      console.error("Profile update failed:", error.response?.data || error.message);
-      throw error;
-    }
-  };
+  try {
+    if (!user?.id) throw new Error("No session user");
+    const payload = { ...data, id: user.id }; // force correct id
+    const res = await apiClient.put(`/users/profile/${user.id}`, payload);
+    setUser(res.data);
+    localStorage.setItem("user", JSON.stringify(res.data));
+  } catch (err) {
+    console.error("Profile update failed:", err.response?.data || err.message);
+    throw err;
+  }
+};
+
   
 
   const logoutAction = async (data) => {

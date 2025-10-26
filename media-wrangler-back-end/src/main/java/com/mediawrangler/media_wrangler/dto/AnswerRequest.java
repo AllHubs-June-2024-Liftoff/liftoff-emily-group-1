@@ -1,4 +1,7 @@
 package com.mediawrangler.media_wrangler.dto;
 
-public class AnswerRequest {
-}
+public record AnswerRequest(
+        String answerText,
+        Long questionId,
+        Integer userId
+) {}

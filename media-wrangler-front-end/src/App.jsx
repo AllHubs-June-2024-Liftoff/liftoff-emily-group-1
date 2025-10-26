@@ -8,6 +8,7 @@ import Login from './components/Login/Login'
 import Register from './components/Register/Register'
 
 
+
 import VerifyEmail from './components/VerifyEmail/VerifyEmail';
 import Profile from './components/Profile/Profile'
 import { PrivateRoutes } from './Services/PrivateRoutes'

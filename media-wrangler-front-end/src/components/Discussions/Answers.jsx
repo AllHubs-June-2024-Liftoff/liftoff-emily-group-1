@@ -46,37 +46,42 @@ const QuestionDetail = () => {
   }, [questionId]);
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    if (!user) {
-      alert("You must be logged in to submit an answer.");
-      return;
-    }
+  if (!user) {
+    alert("You must be logged in to submit an answer.");
+    return;
+  }
 
-    try {
-      const response = await fetch("http://localhost:8080/answers/response", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          answerText: answerText,
-          user: { id: user.id },
-          question: { id: question.id },
-        }),
-      });
 
-      if (!response.ok) {
-        throw new Error("Failed to submit answer");
-      }
-
-      const newAnswer = await response.json();
-      setAnswers((prevAnswers) => [...prevAnswers, newAnswer]);
-      setAnswerText("");
-    } catch (err) {
-      console.error("Error submitting answer:", err.message);
-    }
+  const payload = {
+    answerText: answerText.trim(),
+    questionId: Number(questionId),
+    userId: user.id,
   };
+
+  try {
+    const response = await fetch("http://localhost:8080/answers/response", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",        
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      const errText = await response.text();
+      throw new Error(errText || `Failed to submit answer (${response.status})`);
+    }
+
+    const newAnswer = await response.json();
+    setAnswers((prev) => [...prev, newAnswer]);
+    setAnswerText("");
+  } catch (err) {
+    console.error("Error submitting answer:", err.message);
+    alert(err.message);
+  }
+};
+
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
@@ -87,6 +92,18 @@ const QuestionDetail = () => {
     <div className="answer-container">
       <div className="answer-box">
         <h2 className="answer-title">{question.questionText}</h2>
+        <div className="answer-movie-info">
+          {question.moviePosterPath && (
+            <img
+              src={`https://image.tmdb.org/t/p/w154${question.moviePosterPath}`}
+              alt={question.movieTitle}
+            />
+          )}
+
+          {question.movieTitle && <h3>{question.movieTitle}</h3>}
+          {question.shortDescription && <p className="answer-question-desc">{question.shortDescription}</p>}
+        </div>
+
         
       <div className="mt-5">
         {answers.length > 0 ? (
@@ -94,7 +111,7 @@ const QuestionDetail = () => {
             {answers.map((answer) => (
               <li key={answer.id} className="answers">
                 <p className="answer"><strong>{answer.answerText}</strong></p>
-                <p className="answer">Posted by: {answer.user.username}</p>
+                <p className="answer">Posted by: {answer.username}</p>
                 <p className="answer">{" "}{new Date(answer.timestamp).toLocaleString()}</p>
               </li>
             ))}

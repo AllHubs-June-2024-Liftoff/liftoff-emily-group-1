@@ -57,11 +57,15 @@ public class SecurityConfig {
                                 "/users/logout",
                                 "/users/verify",
                                 "/users/check-verification",
-                                "/users/session-status"
+                                "/users/session-status",
+                                "/users/profile/**",
+                                "/users/info"
                         ).permitAll()
 
                         .requestMatchers("/error", "/error/**"
                         ).permitAll()
+
+                        .requestMatchers("/questions/**").permitAll()
 
                         .requestMatchers("/users/profile/**", "/users/info").authenticated()
 

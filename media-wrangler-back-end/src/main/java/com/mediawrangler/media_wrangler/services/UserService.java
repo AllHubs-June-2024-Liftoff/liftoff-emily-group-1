@@ -75,18 +75,38 @@ public class UserService {
         String subject = "Verify Your Email Address";
         String htmlContent = """
             <html>
-                <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
-                    <div style="max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 5px; background-color: #ADD9F4;">
-                        <h2 style="text-align: center; color: #9E5231;">Welcome to Media Wrangler!</h2>
-                        <p>Hi <strong>%s</strong>,</p>
-                        <p>Thank you for registering with us. Please click the link below to verify your email address:</p>
-                        <div style="text-align: center; margin: 20px 0;">
-                            <a href="%s" rel="nofollow" style="display: inline-block; padding: 10px 20px; font-size: 16px; color: black; background-color: #9E5231; text-decoration: none; border-radius: 5px;">Verify Email</a>
-                        </div>
-                        <p>If you did not sign up for Media Wrangler, you can safely ignore this email.</p>
-                        <p>Best regards,<br>Media Wrangler Team</p>
-                    </div>
-                </body>
+              <body style="margin:0; padding:0; background-color: #f9f4e8; font-family: Georgia, 'Times New Roman', serif; color: #3b2f2f;">
+                <div style="max-width:600px; margin:30px auto; padding:20px; border:3px solid #8b5a2b; border-radius:8px; background-color:#fffaf0;  background-size: cover;">
+                  
+                  <h2 style="text-align:center; color:#8b4513; font-size:28px; margin-bottom:10px; text-transform:uppercase; letter-spacing: 2px; font-weight:bold;">
+                    🤠 Welcome to Media Wrangler!
+                  </h2>
+                  
+                  <p style="font-size:16px; line-height:1.6;">
+                    Howdy <strong>%s</strong>,
+                  </p>
+                  
+                  <p style="font-size:16px; line-height:1.6;">
+                    We're mighty pleased to have you join our campfire of movie lovers! Before you saddle up and ride into your dashboard, we just need to confirm that this here email belongs to you.
+                  </p>
+                  
+                  <div style="text-align:center; margin:25px 0;">
+                    <a href="%s" rel="nofollow"
+                      style="padding:12px 25px; font-size:18px; background-color:#8b4513; color:#fff8dc; text-decoration:none; border-radius:6px; border:2px solid #5e3410; display:inline-block; font-weight:bold; text-transform:uppercase;">
+                      Verify Email
+                    </a>
+                  </div>
+                  
+                  <p style="font-size:15px; line-height:1.6;">
+                    If you didn’t hitch your wagon to Media Wrangler, no worries — you can ignore this email and ride off into the sunset.
+                  </p>
+                  
+                  <p style="font-size:15px; line-height:1.6;">
+                    Happy Trails,<br>
+                    <strong>The Media Wrangler Crew</strong>
+                  </p>
+                </div>
+              </body>
             </html>
             """.formatted(user.getFirstname(), verificationUrl);
 

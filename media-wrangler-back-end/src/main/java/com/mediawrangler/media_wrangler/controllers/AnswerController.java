@@ -3,6 +3,8 @@ package com.mediawrangler.media_wrangler.controllers;
 import com.mediawrangler.media_wrangler.data.AnswerRepository;
 import com.mediawrangler.media_wrangler.data.QuestionRepository;
 import com.mediawrangler.media_wrangler.data.UserRepository;
+import com.mediawrangler.media_wrangler.dto.AnswerDTO;
+import com.mediawrangler.media_wrangler.dto.AnswerRequest;
 import com.mediawrangler.media_wrangler.models.Answer;
 import com.mediawrangler.media_wrangler.models.Question;
 import com.mediawrangler.media_wrangler.models.User;
@@ -17,45 +19,53 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/answers")
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 public class AnswerController {
 
-    @Autowired
-    private AnswerService answerService;
+    private final AnswerService answerService;
+    private final QuestionRepository questionRepository;
+    private final AnswerRepository answerRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private QuestionRepository questionRepository;
-
-    @Autowired
-    private AnswerRepository answerRepository;
-
-    @Autowired
-    private UserRepository userRepository;
+    public AnswerController(AnswerService answerService,
+                            QuestionRepository questionRepository,
+                            AnswerRepository answerRepository,
+                            UserRepository userRepository) {
+        this.answerService = answerService;
+        this.questionRepository = questionRepository;
+        this.answerRepository = answerRepository;
+        this.userRepository = userRepository;
+    }
 
     @PostMapping("/response")
-    public ResponseEntity<Answer> createAnswer(@RequestBody Map<String, Object> payload) {
-        String answerText = (String) payload.get("answerText");
-        Long questionId = ((Map<String, Integer>) payload.get("question")).get("id").longValue();
-        int userId = ((Map<String, Integer>) payload.get("user")).get("id");
+    public ResponseEntity<?> createAnswer(@RequestBody AnswerRequest req) {
+        if (req == null || req.answerText() == null || req.answerText().isBlank()
+                || req.questionId() == null || req.userId() == null) {
+            return ResponseEntity.badRequest().body("answerText, questionId, and userId are required");
+        }
 
-        Question question = questionRepository.findById(questionId)
+        Question question = questionRepository.findById(req.questionId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid Question ID"));
-        User user = userRepository.findById(userId)
+        User user = userRepository.findById(req.userId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid User ID"));
 
-        Answer answer = new Answer();
-        answer.setAnswerText(answerText);
-        answer.setQuestion(question);
-        answer.setUser(user);
-        answer.setTimestamp(LocalDateTime.now());
+        Answer a = new Answer();
+        a.setAnswerText(req.answerText().trim());
+        a.setQuestion(question);
+        a.setUser(user);
+        a.setTimestamp(LocalDateTime.now());
 
-        Answer savedAnswer = answerRepository.save(answer);
-
-        return ResponseEntity.ok(savedAnswer);
+        Answer saved = answerRepository.save(a);
+        return ResponseEntity.ok(AnswerDTO.from(saved));  // <— return DTO, not entity
     }
 
     @GetMapping("/{questionId}")
-    public List<Answer> getAnswersByQuestionId(@PathVariable Long questionId) {
-        return answerService.getAnswersByQuestionId(questionId);
+    public List<AnswerDTO> getAnswersByQuestionId(@PathVariable Long questionId) {
+        return answerService.getAnswersByQuestionId(questionId)
+                .stream()
+                .map(AnswerDTO::from)
+                .toList();
     }
 }
+
+

@@ -1,150 +1,142 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
+import { useAuth } from "../../Services/AuthContext";
+import NewDiscussionForm from "./NewDiscussionForm";
 import "./Discussions.css";
 
-const Discussions = () => {
-  const [user, setUser] = useState(null);
+export default function Discussions() {
+  const { user } = useAuth();
   const [questions, setQuestions] = useState([]);
-  const [filteredQuestions, setFilteredQuestions] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [questionText, setQuestionText] = useState("");
-  const [searchTerm, setSearchTerm] = useState(""); 
+  const [loading, setLoading]   = useState(true);
+  const [err, setErr]           = useState(null);
 
-  const navigate = useNavigate();
 
-  useEffect(() => {
-    const storedUser = JSON.parse(localStorage.getItem("user"));
-    setUser(storedUser);
-  }, []);
+  const [search, setSearch] = useState("");
+  const [debounced, setDebounced] = useState("");
+
 
   useEffect(() => {
-    fetchQuestions();
-  }, []);
+    const t = setTimeout(() => setDebounced(search.trim().toLowerCase()), 250);
+    return () => clearTimeout(t);
+  }, [search]);
 
   const fetchQuestions = async () => {
     try {
-      const response = await fetch("http://localhost:8080/questions/view");
-      if (!response.ok) {
-        throw new Error("Failed to fetch questions");
-      }
-      const data = await response.json();
-      setQuestions(data);
-      setFilteredQuestions(data);
-      setLoading(false);
-    } catch (err) {
-      setError(err.message);
+      setLoading(true);
+      const res = await fetch("http://localhost:8080/questions");
+      if (!res.ok) throw new Error(`Failed to load (${res.status})`);
+      const data = await res.json();
+      setQuestions(Array.isArray(data) ? data : []);
+      setErr(null);
+    } catch (e) {
+      setQuestions([]);
+      setErr(e.message || "Network error");
+    } finally {
       setLoading(false);
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await fetch("http://localhost:8080/questions/new", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          questionText: questionText,
-          user: { id: user.id },
-        }),
-      });
+  useEffect(() => { fetchQuestions(); }, []);
 
-      if (response.ok) {
-        setQuestionText("");
-        fetchQuestions();
-        console.log("Question submitted successfully.");
-      } else {
-        console.error("Failed to submit question:", response.statusText);
-      }
-    } catch (error) {
-      console.error("Failed to submit question:", error.message);
-    }
-  };
-
-  const handleSearch = (e) => {
-    const term = e.target.value.toLowerCase();
-    setSearchTerm(term);
-    const filtered = questions.filter((question) =>
-      question.questionText.toLowerCase().includes(term)
-    );
-    setFilteredQuestions(filtered);
-  };
-
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
+  const filtered = useMemo(() => {
+    if (!debounced) return questions;
+    return questions.filter(q => {
+      const hay = [
+        q.questionText,
+        q.shortDescription,
+        q.movieTitle,
+        q.username
+      ].filter(Boolean).join(" ").toLowerCase();
+      return hay.includes(debounced);
+    });
+  }, [questions, debounced]);
 
   return (
-    <>
-    <div className="question-container">
-      <div className="question-form-container">
-        <form onSubmit={handleSubmit} className="question-box">
-          <h2 className="title is-4">Submit What You Want To Discuss</h2>
-          <div className="question-field">
-            <textarea
-              className="question-textarea"
-              placeholder="Enter your question"
-              value={questionText}
-              onChange={(e) => setQuestionText(e.target.value)}
-              required
-            ></textarea>
-          </div>
-          <div className="question-field">
-            <button type="submit" className="button is-primary">
-              Submit
-            </button>
-          </div>
-        </form>
-      </div>
+    <div className="disc-page">
+      <div className="disc-wrap">
 
-      <div className="search-bar-container">
-        <input
-          type="text"
-          placeholder="Search discussions..."
-          value={searchTerm}
-          onChange={handleSearch}
-          className="question-search-input"
-        />
-      </div>
+        <section className="disc-left">
+          <NewDiscussionForm user={user} onCreated={fetchQuestions} />
+        </section>
 
-      <div>
-        <h1 className="title is-3">Discussions</h1>
-        {filteredQuestions.length > 0 ? (
-          <ul className="question-list is-hoverable">
-            {filteredQuestions.map((question) => (
-              <li
-                key={question.id}
-                className="question-view-box"
-                style={{ cursor: "pointer" }}
-                onClick={() => {
-                  console.log("Navigating to:", `/answers/${question.id}`);
-                  navigate(`/answers/${question.id}`);
-                }}
-              >
-                <p>
-                  <strong>{question.questionText}</strong>
-                </p>
-                <p>Posted by: {question.user.username}</p>
-                <p>{new Date(question.timestamp).toLocaleString()}</p>
+        <section className="disc-right">
+          <div className="disc-right-header">
+            <h2>Recent Discussions</h2>
+            {!loading && !err && (
+              <span className="badge">{filtered.length}</span>
+            )}
+            <input
+              className="disc-search"
+              type="search"
+              placeholder="Search questions, movies, users…"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+            
+          </div>
+
+          {loading && (
+            <div className="skeleton-list">
+              <div className="skeleton-card" />
+              <div className="skeleton-card" />
+              <div className="skeleton-card" />
+            </div>
+          )}
+
+          {!loading && err && <p className="disc-error">Error: {err}</p>}
+
+          {!loading && !err && filtered.length === 0 && (
+            <div className="disc-empty">
+              <p>No matching discussions.</p>
+            </div>
+          )}
+
+          <ul className="disc-list">
+            {filtered.map(q => (
+              <li key={q.id} className="disc-card">
+                <div className="disc-thumb">
+                  {q.moviePosterPath ? (
+                    <img
+                      src={`https://image.tmdb.org/t/p/w92${q.moviePosterPath}`}
+                      alt={q.movieTitle}
+                    />
+                  ) : (
+                    <div className="thumb-placeholder">🎬</div>
+                  )}
+                </div>
+
+                <div className="disc-body">
+                  <Link to={`/answers/${q.id}`} className="disc-title">
+                    {q.questionText}
+                  </Link>
+
+                  {q.shortDescription && (
+                    <p className="disc-desc">{q.shortDescription}</p>
+                  )}
+
+                  <div className="disc-meta">
+                    <span className="pill">
+                      {q.movieTitle ? `Movie: ${q.movieTitle}` : "General"}
+                    </span>
+                    <span>by {q.username}</span>
+                    {q.createdAt && (
+                      <span>{new Date(q.createdAt).toLocaleString()}</span>
+                    )}
+                  </div>
+                </div>
               </li>
             ))}
           </ul>
-        ) : (
-          <p>No matching discussions found.</p>
-        )}
+        </section>
       </div>
-    </div>
-     <footer className="footer">
-     <p>This product uses the TMDB API but is not endorsed or certified by TMDB.</p>
-     <p>© {new Date().getFullYear()} Media Wrangler</p>
-     <div className="about-us">
-       <a href="/about-us">About PurpleTONE</a>
-     </div>
-   </footer>
-   </>
-  );
-};
 
-export default Discussions;
+      <footer className="disc-footer">
+        <p>This product uses the TMDB API but is not endorsed or certified by TMDB.</p>
+        <p>© {new Date().getFullYear()} Media Wrangler</p>
+        <div className="about-us">
+          <a href="/about-us">About PurpleTONE</a>
+        </div>
+      </footer>
+    </div>
+  );
+}

@@ -6,22 +6,23 @@ import fallbackImage from "../../../Resources/default-fallback-image.jpg";
 import styles from "../../stylings/PosterCard.module.css";
 import StarIcon from "@mui/icons-material/Star";
 import GradeIcon from "@mui/icons-material/Grade";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
+import Popover from "@mui/material/Popover";
+import List from "@mui/material/List";
+import ListItemButton from "@mui/material/ListItemButton";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
+import Divider from "@mui/material/Divider";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
-const menuItemStyles = {
+const itemSx = {
   fontWeight: "bold",
-  borderRadius: "4px",
+  borderRadius: "6px",
   color: "#9e5231",
   "&:hover": { backgroundColor: "#f6d8c3" },
-  display: "flex",
-  alignItems: "center",
-  gap: "8px",
 };
 
 function MovieCard({ movie }) {
@@ -30,11 +31,23 @@ function MovieCard({ movie }) {
   const { lists = [], setLists } = useListContext();
 
   const [newListName, setNewListName] = useState("");
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [showAddListForm, setShowAddListForm] = useState(false);
   const [hoveredId, setHoveredId] = useState(null);
 
+  // Single popover that replaces the Menu entirely
+  const [popAnchor, setPopAnchor] = useState(null);
+  const [showAddListForm, setShowAddListForm] = useState(false);
+
+  const inputRef = React.useRef(null);
   const navigate = useNavigate();
+
+  // Focus the input when we reveal the add form
+  useEffect(() => {
+    if (showAddListForm) {
+      // wait a tick for TextField to mount
+      const id = setTimeout(() => inputRef.current?.focus(), 0);
+      return () => clearTimeout(id);
+    }
+  }, [showAddListForm]);
 
   useEffect(() => {
     if (!userId) return;
@@ -50,26 +63,24 @@ function MovieCard({ movie }) {
     ? `https://image.tmdb.org/t/p/w780${movie.posterPath}`
     : fallbackImage;
 
-  const handleAddClick = (e) => {
+  const openPopover = (e) => {
     if (!userId) {
       toast.info("Log in to save movies to a list.");
       return;
     }
-    setAnchorEl(e.currentTarget);
+    setPopAnchor(e.currentTarget);
   };
 
-  const handleMenuClose = () => {
-    setAnchorEl(null);
+  const closePopover = () => {
+    setPopAnchor(null);
     setShowAddListForm(false);
     setNewListName("");
   };
 
   const handleAddList = async () => {
     const name = newListName.trim();
-    if (!name) {
-      return toast.warn("Please enter a list name.");
-    }
-    if (lists.includes(name)) {
+    if (!name) return toast.warn("Please enter a list name.");
+    if (lists.some((l) => l.toLowerCase() === name.toLowerCase())) {
       return toast.info(`"${name}" already exists.`);
     }
 
@@ -82,8 +93,9 @@ function MovieCard({ movie }) {
 
       if (res.ok) {
         setLists((prev) => [...prev, name]);
-        handleMenuClose();
         toast.success(`List "${name}" added!`);
+        setShowAddListForm(false);
+        setNewListName("");
       } else {
         toast.error("Failed to add list.");
       }
@@ -110,7 +122,7 @@ function MovieCard({ movie }) {
       console.error("Error adding movie:", err);
       toast.error("Something went wrong while adding the movie.");
     } finally {
-      handleMenuClose();
+      closePopover();
     }
   };
 
@@ -133,68 +145,58 @@ function MovieCard({ movie }) {
               hoveredId === movie.id ? "2px solid rgb(99, 180, 176)" : "none",
           }}
         />
-        <button className={styles.addButton} onClick={handleAddClick}>
+        <button className={styles.addButton} onClick={openPopover}>
           <StarIcon style={{ color: "white", fontSize: "20px" }} />
         </button>
 
-        <Menu
-          anchorEl={anchorEl}
-          open={!!anchorEl}
-          onClose={handleMenuClose}
+        {/* Single Popover with list + add form (no Menu, no type-to-select) */}
+        <Popover
+          open={Boolean(popAnchor)}
+          anchorEl={popAnchor}
+          onClose={closePopover}
+          anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+          transformOrigin={{ vertical: "top", horizontal: "left" }}
           PaperProps={{
-            style: {
-              padding: "16px",
-              borderRadius: "8px",
+            sx: {
+              p: 1.5,
               backgroundColor: "#f4e1d2",
-              boxShadow: "none",
-              border: "none",
+              borderRadius: "10px",
+              minWidth: 260,
             },
+            // Safety: don't let keystrokes bubble elsewhere
+            onKeyDown: (e) => e.stopPropagation(),
+            onKeyDownCapture: (e) => e.stopPropagation(),
           }}
         >
-          {lists.map((listName, idx) => (
-            <MenuItem
-              key={`${listName}-${idx}`}
-              onClick={() => handleSelectList(listName)}
-              sx={menuItemStyles}
-            >
-              <GradeIcon sx={{ color: "#9e5231" }} /> {listName}
-            </MenuItem>
-          ))}
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              gap: 1,
+            }}
+            onKeyDown={(e) => e.stopPropagation()}
+            onKeyDownCapture={(e) => e.stopPropagation()}
+          >
+            <List dense disablePadding>
+              {lists.map((listName, idx) => (
+                <ListItemButton
+                  key={`${listName}-${idx}`}
+                  onClick={() => handleSelectList(listName)}
+                  sx={itemSx}
+                >
+                  <ListItemIcon sx={{ minWidth: 34 }}>
+                    <GradeIcon sx={{ color: "#9e5231" }} />
+                  </ListItemIcon>
+                  <ListItemText primary={listName} />
+                </ListItemButton>
+              ))}
+            </List>
 
-          {!showAddListForm ? (
-            <MenuItem
-              onClick={() => setShowAddListForm(true)}
-              sx={menuItemStyles}
-            >
-              + Add List
-            </MenuItem>
-          ) : (
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                gap: "8px",
-                alignItems: "center",
-                padding: "8px",
-                backgroundColor: "#f4e1d2",
-                borderRadius: "8px",
-              }}
-            >
-              <TextField
-                label="New List Name"
-                variant="outlined"
-                size="small"
-                value={newListName}
-                onChange={(e) => setNewListName(e.target.value)}
-                sx={{
-                  width: "200px",
-                  "& .MuiOutlinedInput-root": { borderRadius: "16px" },
-                }}
-              />
+            <Divider sx={{ my: 1 }} />
+
+            {!showAddListForm ? (
               <Button
-                variant="contained"
-                size="small"
-                onClick={handleAddList}
+                onClick={() => setShowAddListForm(true)}
                 sx={{
                   backgroundColor: "#9e5231",
                   color: "white",
@@ -202,18 +204,60 @@ function MovieCard({ movie }) {
                   borderRadius: "8px",
                   textTransform: "capitalize",
                 }}
+                variant="contained"
+                size="small"
               >
-                Add List
+                + Add List
               </Button>
-            </Box>
-          )}
-        </Menu>
+            ) : (
+              <Box
+                sx={{ display: "flex", flexDirection: "column", gap: 1 }}
+                onKeyDown={(e) => e.stopPropagation()}
+                onKeyDownCapture={(e) => e.stopPropagation()}
+              >
+                <TextField
+                  label="New List Name"
+                  variant="outlined"
+                  size="small"
+                  value={newListName}
+                  onChange={(e) => setNewListName(e.target.value)}
+                  inputRef={inputRef}
+                  sx={{
+                    "& .MuiOutlinedInput-root": { borderRadius: "12px" },
+                  }}
+                />
+                <Box sx={{ display: "flex", gap: 1, justifyContent: "flex-end" }}>
+                  <Button size="small" onClick={() => setShowAddListForm(false)}>
+                    Cancel
+                  </Button>
+                  <Button
+                    size="small"
+                    variant="contained"
+                    onClick={handleAddList}
+                    sx={{
+                      backgroundColor: "#9e5231",
+                      color: "white",
+                      "&:hover": { backgroundColor: "#b8643f", opacity: 0.9 },
+                      borderRadius: "8px",
+                      textTransform: "capitalize",
+                    }}
+                  >
+                    Add
+                  </Button>
+                </Box>
+              </Box>
+            )}
+          </Box>
+        </Popover>
       </div>
     </div>
   );
 }
 
 export default MovieCard;
+
+
+
 
 
 

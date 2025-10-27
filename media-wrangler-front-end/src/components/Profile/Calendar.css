@@ -1,114 +1,160 @@
+/* ===== Calendar (React Big Calendar) – Southwestern theme ===== */
+
+/* Card container stays transparent so the art shows through */
 .calendar-card {
   background: transparent;
   padding: 0;
-  margin: 0; 
+  margin: 0;
   border: none;
-  box-shadow: none; 
+  box-shadow: none;
 }
 
+/* Modal */
 .calendar-modal-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
 }
-
 .calendar-modal-content {
-  background: #798478;
+  background: #F5E8CE; /* sand */
+  color: #3D2B1F;      /* charcoal brown */
   padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-  max-width: 400px;
-  width: 90%;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+  max-width: 420px;
+  width: 92%;
+  border: 1px solid #A97848; /* camel border */
 }
-
-.calendar-modal-title {
-  text-align: center;
-}
-
-.calendar-form-group {
-  margin-bottom: 15px;
-}
-
+.calendar-modal-title { text-align: center; }
+.calendar-form-group { margin-bottom: 14px; }
 .calendar-form-group label {
   display: block;
-  margin-bottom: 5px;
+  margin-bottom: 6px;
+  font-weight: 600;
+  color: #3D2B1F;
 }
-
 .calendar-form-group input {
   width: 100%;
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  padding: 10px;
+  border: 1px solid #C8B088;
+  border-radius: 8px;
+  background: #FFF9F0;
+  color: #3D2B1F;
 }
 
 .calendar-modal-buttons {
   display: flex;
-  justify-content: space-between;
-  margin-top: 20px;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 18px;
 }
-
-.calendar-submit-button {
-  background: #add9f4;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
+.calendar-submit-button,
 .calendar-cancel-button {
-  background: #dc3545;
-  color: white;
   border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
+  padding: 10px 16px;
+  border-radius: 8px;
   cursor: pointer;
+  font-weight: 600;
 }
-
+.calendar-submit-button {
+  background: #3CA6A6; /* turquoise CTA */
+  color: #FFF9F0;
+}
+.calendar-cancel-button {
+  background: #9E3B26; /* brick red */
+  color: #FFF9F0;
+}
 .calendar-submit-button:hover,
-.calendar-cancel-button:hover {
-  opacity: 0.9;
-}
+.calendar-cancel-button:hover { opacity: 0.92; }
 
+/* --- Main calendar frame --- */
 .rbc-calendar {
-  background-color: #4d6a6d;
-  color: white; 
-  border-radius: 10px;
-  padding: 10px;
+  background: #F5E8CE;         /* sand */
+  color: #3D2B1F;              /* charcoal brown text */
+  border-radius: 12px;
+  padding: 8px;
   width: 100%;
   min-height: 500px;
+  border: 1px solid #A97848;   /* camel border */
+  box-shadow: 0 6px 18px rgba(0,0,0,0.15);
 }
 
+/* Toolbar (month title + nav) */
 .rbc-toolbar {
-  background-color: #798478; 
-  color: white;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 5px 5px 0 0;
-  padding: 5px;
+  background: #C26A3D;         /* clay */
+  color: #FFF9F0;
+  border-radius: 10px 10px 0 0;
+  padding: 8px 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.25);
 }
+.rbc-toolbar .rbc-toolbar-label { font-weight: 700; }
+.rbc-toolbar .rbc-btn-group > button {
+  background: rgba(255, 249, 240, 0.15);
+  color: #FFF9F0;
+  border: 1px solid rgba(255, 249, 240, 0.35);
+  border-radius: 8px;
+  padding: 6px 10px;
+}
+.rbc-toolbar .rbc-btn-group > button:hover { background: rgba(255,249,240,0.28); }
+.rbc-toolbar .rbc-btn-group > button:focus { outline: 2px solid #FFF9F0; outline-offset: 1px; }
 
+/* Month grid */
 .rbc-month-view {
-  background-color: #798478;
-  color: white;
+  background: #F5E8CE;  /* sand */
+  color: #3D2B1F;
 }
-
-.rbc-day-bg {
-  background-color: #a0a083;
-}
+.rbc-month-row + .rbc-month-row { border-top: 1px solid #E3CEAA; }
+.rbc-day-bg { background: #F0DFC3; }          /* default days */
+.rbc-off-range-bg { background: #EAD6B6; }    /* prev/next month days */
 
 .rbc-date-cell {
-  color: white;
-  font-weight: bold;
+  color: #3D2B1F;
+  font-weight: 700;
+  padding: 6px 8px;
+}
+.rbc-date-cell:hover { background: rgba(58, 166, 166, 0.12); }
+
+/* Today outline */
+.rbc-today {
+  background: #F8EFDC;
+  box-shadow: inset 0 0 0 2px #A97848; /* camel outline */
 }
 
-.rbc-date-cell:hover {
-  background-color: rgba(255, 255, 255, 0.2); 
+/* Events */
+.rbc-event, .rbc-day-slot .rbc-event {
+  background: #3CA6A6;     /* turquoise */
+  border: 1px solid #2E8E8E;
+  color: #0A1B2A;          /* deep navy for readable text */
+  border-radius: 8px;
+  padding: 2px 6px;
+}
+.rbc-event:hover { filter: brightness(0.95); }
+.rbc-selected { box-shadow: 0 0 0 2px #DDAA00 inset; } /* mustard selection ring */
+
+/* Selection & drag range */
+.rbc-slot-selection {
+  background: rgba(60, 166, 166, 0.25);
+  border: 1px dashed #2E8E8E;
 }
 
+/* Headers */
+.rbc-header {
+  background: #F0DFC3;
+  color: #3D2B1F;
+  border-bottom: 1px solid #E3CEAA;
+  padding: 6px 8px;
+  font-weight: 700;
+}
+
+/* Tooltips (if using) */
+.rbc-overlay {
+  background: #FFF9F0;
+  color: #3D2B1F;
+  border: 1px solid #A97848;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+}

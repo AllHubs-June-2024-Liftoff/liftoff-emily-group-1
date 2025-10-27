@@ -7,7 +7,6 @@ import jakarta.persistence.*;
         name = "movie_list",
         uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "list_name", "movie_id"})
 )
-
 public class MovieList {
 
     @Id

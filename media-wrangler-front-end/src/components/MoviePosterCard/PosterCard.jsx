@@ -33,17 +33,14 @@ function MovieCard({ movie }) {
   const [newListName, setNewListName] = useState("");
   const [hoveredId, setHoveredId] = useState(null);
 
-  // Single popover that replaces the Menu entirely
   const [popAnchor, setPopAnchor] = useState(null);
   const [showAddListForm, setShowAddListForm] = useState(false);
 
   const inputRef = React.useRef(null);
   const navigate = useNavigate();
 
-  // Focus the input when we reveal the add form
   useEffect(() => {
     if (showAddListForm) {
-      // wait a tick for TextField to mount
       const id = setTimeout(() => inputRef.current?.focus(), 0);
       return () => clearTimeout(id);
     }
@@ -149,7 +146,6 @@ function MovieCard({ movie }) {
           <StarIcon style={{ color: "white", fontSize: "20px" }} />
         </button>
 
-        {/* Single Popover with list + add form (no Menu, no type-to-select) */}
         <Popover
           open={Boolean(popAnchor)}
           anchorEl={popAnchor}
@@ -163,7 +159,6 @@ function MovieCard({ movie }) {
               borderRadius: "10px",
               minWidth: 260,
             },
-            // Safety: don't let keystrokes bubble elsewhere
             onKeyDown: (e) => e.stopPropagation(),
             onKeyDownCapture: (e) => e.stopPropagation(),
           }}

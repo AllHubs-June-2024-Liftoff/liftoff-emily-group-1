@@ -1,89 +1,169 @@
 .profile-bottom {
   margin-top: 20px;
-  background: rgba(158, 82, 49, 0.65); 
+  background: rgba(245, 232, 206, 0.90); 
+  color: #3D2B1F;                      
   padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  color: white; 
+  border-radius: 12px;
+  border: 1px solid #A97848;           
+  box-shadow: 0 6px 18px rgba(0,0,0,0.12);
 }
 
 #movie-search {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); 
-  gap: 16px;
-  padding: 10px;
-  justify-items: center; 
-  margin-top: 20px; 
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 18px;
+  padding: 12px;
+  justify-items: center;
+  margin-top: 14px;
 }
 
 .posterContainer {
-  position: relative; 
-  width: 150px;
+  position: relative;
+  width: 160px;
   height: auto;
-  margin: 10px;
+  margin: 6px;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
 .posterImage {
-  width: 100%; 
-  height: auto; 
-  border-radius: 8px;
-  transition: transform 0.3s ease, border 0.3s ease;
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+  border: 1px solid #C8B088;           
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border 0.25s ease;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
 }
 
 .posterImage:hover {
-  transform: scale(1.05);
-  border: 2px solid rgb(99, 180, 176);
-}
-
-@media (max-width: 600px) {
-  #movie-search {
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 10px;
-  }
-
-  .posterContainer {
-    width: 120px;
-  }
-
-  .deleteButton {
-    width: 25px;
-    height: 25px;
-    font-size: 14px;
-  }
+  transform: scale(1.04);
+  border: 2px solid #3CA6A6;        
+  box-shadow: 0 6px 16px rgba(0,0,0,0.22);
 }
 
 .deleteButton {
   position: absolute;
   top: 8px;
   right: 8px;
-  background-color: rgba(158, 82, 49, 0.85);
-  color: white;
+  background-color: #9E3B26;      
+  color: #FFF9F0;
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
   width: 30px;
   height: 30px;
   font-size: 16px;
-  font-weight: bold;
+  font-weight: 800;
   cursor: pointer;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  transition: background-color 0.3s ease, transform 0.2s ease;
-  display: flex; 
+  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+  transition: transform 0.18s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+  display: flex;
   justify-content: center;
   align-items: center;
   line-height: 1;
   padding: 0;
-  overflow: hidden;
 }
 
 .deleteButton:hover {
-  background-color: rgba(255, 69, 58, 1);
-  transform: scale(1.1);
+  background-color: #7A2F1D;            
+  transform: scale(1.08);
 }
 
 .deleteButton:focus {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(158, 82, 49, 0.5); 
+  box-shadow: 0 0 0 3px rgba(221, 170, 0, 0.55); 
+}
+
+@media (max-width: 600px) {
+  #movie-search {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 12px;
+  }
+  .posterContainer { width: 135px; }
+  .deleteButton { width: 26px; height: 26px; font-size: 14px; }
+}
+
+.movie-list-wrap { 
+  gap: 10px;
+}
+
+.movie-list-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 16px;
+  background: rgba(245, 232, 206, 0.9);  
+  border: 1px solid #A97848;             
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+}
+
+.movie-list-title {
+  margin: 0;
+  color: #3D2B1F;                     
+  font-weight: 800;
+  letter-spacing: 0.3px;
+}
+
+.filter-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.filter-label {
+  color: #3D2B1F;
+  font-weight: 700;
+}
+
+.filter-select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background: #FFF9F0;                     
+  color: #3D2B1F;
+  border-radius: 10px;
+  padding: 8px 36px 8px 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.05s ease;
+  position: relative;
+  min-width: 180px;
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.02);
+}
+
+.filter-select {
+  background-image:
+    linear-gradient(45deg, transparent 50%, #3D2B1F 50%),
+    linear-gradient(135deg, #3D2B1F 50%, transparent 50%);
+  background-position:
+    calc(100% - 18px) 50%,
+    calc(100% - 12px) 50%;
+  background-size: 6px 6px, 6px 6px;
+  background-repeat: no-repeat;
+}
+
+.filter-select:hover {
+  border-color: #A97848;
+}
+
+.filter-select:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(60,166,166,0.25); 
+}
+
+@media (max-width: 600px) {
+  .movie-list-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+  .filter-group {
+    justify-content: space-between;
+  }
+  .filter-select {
+    width: 100%;
+  }
 }

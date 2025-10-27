@@ -99,12 +99,20 @@ useEffect(() => {
     : movieLists;
 
   return (
-    <div>
-      <h1>Movie Lists</h1>
+  <div className="movie-list-wrap">
+    <div className="movie-list-header">
+      <h1 className="movie-list-title">Movie Lists</h1>
 
-      <div>
-        <label htmlFor="filterDropdown">Filter by List Name: </label>
-        <select id="filterDropdown" value={filter} onChange={handleFilterChange}>
+      <div className="filter-group">
+        <label htmlFor="filterDropdown" className="filter-label">
+          Filter by List Name:
+        </label>
+        <select
+          id="filterDropdown"
+          value={filter}
+          onChange={handleFilterChange}
+          className="filter-select"
+        >
           <option value="">All</option>
           {Array.from(new Set(movieLists.map((list) => list.listName))).map((listName, index) => (
             <option key={index} value={listName}>
@@ -113,32 +121,33 @@ useEffect(() => {
           ))}
         </select>
       </div>
-
-      <div id="movie-search">
-        {filteredLists
-          .filter((list) => list.movieId !== 0)
-          .map((list) => (
-            <div key={list.id} className="posterContainer">
-              {movies[list.movieId]?.poster_path ? (
-                <img
-                  src={`https://image.tmdb.org/t/p/w200${movies[list.movieId].poster_path}`}
-                  alt={movies[list.movieId].title}
-                  className="posterImage"
-                />
-              ) : (
-                <p>Loading...</p>
-              )}
-              <button
-                className="deleteButton"
-                onClick={() => handleDelete(list.id, list.movieId)}
-              >
-                x
-              </button>
-            </div>
-          ))}
-      </div>
     </div>
-  );
+
+    <div id="movie-search">
+      {filteredLists
+        .filter((list) => list.movieId !== 0)
+        .map((list) => (
+          <div key={list.id} className="posterContainer">
+            {movies[list.movieId]?.poster_path ? (
+              <img
+                src={`https://image.tmdb.org/t/p/w200${movies[list.movieId].poster_path}`}
+                alt={movies[list.movieId].title}
+                className="posterImage"
+              />
+            ) : (
+              <p>Loading...</p>
+            )}
+            <button
+              className="deleteButton"
+              onClick={() => handleDelete(list.id, list.movieId)}
+            >
+              x
+            </button>
+          </div>
+        ))}
+    </div>
+  </div>
+);
 };
 
 export default MovieListTable;
